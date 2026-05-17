@@ -1,0 +1,18 @@
+{
+  "chile": {
+    "descripcion": "Ley 20.606 + DS 977/96 — por 100g o 100ml",
+    "azucares_alto_g": 22.5,
+    "sodio_alto_mg": 800,
+    "grasas_saturadas_alto_g": 6.0,
+    "calorias_alto_kcal": 350,
+    "grasas_trans_permitidas_g": 0
+  },
+  "eu": {
+    "descripcion": "Reglamento (UE) 1169/2011 / EFSA — por 100g o 100ml",
+    "azucares_alto_g": 22.5,
+    "sodio_alto_mg": 600,
+    "grasas_saturadas_alto_g": 5.0,
+    "calorias_alto_kcal": 400,
+    "grasas_trans_permitidas_g": 2
+  }
+}
