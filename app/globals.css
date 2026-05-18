@@ -1,26 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@400;500;600&display=swap');
+/* ─── Tokens de color ─────────────────────────────────────────────────────── */
 
 :root {
-  --background: #F5F5F0;
-  --foreground: #1A1A1A;
+  --background:    #FAFAF8;
+  --foreground:    #111827;
+  --card:          #FFFFFF;
+  --border:        #E5E5E3;
+  --muted:         #6B7280;
+
+  --brand:         #E63030;
+  --brand-dark:    #C72020;
+  --brand-light:   #FF5C5C;
+
+  --ok:            #00B86B;
+  --advertencia:   #FF9500;
+  --alerta:        #E63030;
+
+  /* Notas */
+  --nota-7: #00B86B;
+  --nota-6: #00B86B;
+  --nota-5: #8BC34A;
+  --nota-4: #FF9500;
+  --nota-3: #FF5722;
+  --nota-2: #E63030;
+  --nota-1: #E63030;
 }
 
 .dark {
-  --background: #0F0F0E;
-  --foreground: #F5F5F0;
+  --background:    #0D0D0B;
+  --foreground:    #F9FAFB;
+  --card:          #1A1A18;
+  --border:        #2A2A28;
+  --muted:         #9CA3AF;
+
+  --brand:         #FF5C5C;
+  --brand-dark:    #E63030;
+  --brand-light:   #FF8080;
 }
+
+/* ─── Base ────────────────────────────────────────────────────────────────── */
 
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: 'DM Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .font-syne {
   font-family: 'Syne', sans-serif;
 }
+
+/* ─── Utilidades de nota ──────────────────────────────────────────────────── */
+
+.nota-color-7, .nota-color-6 { color: var(--nota-7); }
+.nota-color-5               { color: var(--nota-5); }
+.nota-color-4               { color: var(--nota-4); }
+.nota-color-3               { color: var(--nota-3); }
+.nota-color-2, .nota-color-1 { color: var(--nota-2); }
+
+.nota-bg-7, .nota-bg-6 { background-color: color-mix(in srgb, var(--nota-7) 12%, transparent); border-color: color-mix(in srgb, var(--nota-7) 30%, transparent); }
+.nota-bg-5             { background-color: color-mix(in srgb, var(--nota-5) 12%, transparent); border-color: color-mix(in srgb, var(--nota-5) 30%, transparent); }
+.nota-bg-4             { background-color: color-mix(in srgb, var(--nota-4) 12%, transparent); border-color: color-mix(in srgb, var(--nota-4) 30%, transparent); }
+.nota-bg-3             { background-color: color-mix(in srgb, var(--nota-3) 12%, transparent); border-color: color-mix(in srgb, var(--nota-3) 30%, transparent); }
+.nota-bg-2, .nota-bg-1 { background-color: color-mix(in srgb, var(--nota-2) 12%, transparent); border-color: color-mix(in srgb, var(--nota-2) 30%, transparent); }
+
+/* ─── Animaciones ─────────────────────────────────────────────────────────── */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+
+.animate-fade-up   { animation: fade-up  0.3s ease both; }
+.animate-scale-in  { animation: scale-in 0.2s ease both; }
+
+/* ─── Scrollbar discreta ─────────────────────────────────────────────────── */
+
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }

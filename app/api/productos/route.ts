@@ -5,6 +5,8 @@ import {
   listarProductosRecientes,
 } from "@/lib/insforge";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const nombre = searchParams.get("nombre");

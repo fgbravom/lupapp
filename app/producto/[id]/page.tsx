@@ -24,63 +24,53 @@ export default async function ProductoPage({ params }: Props) {
 
   return (
     <div className="space-y-6">
-      <nav className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
-        <Link href="/" className="hover:text-neutral-700 dark:hover:text-neutral-200">
-          Inicio
-        </Link>
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-2 text-sm text-[var(--muted)]">
+        <Link href="/" className="hover:text-[var(--foreground)] transition-colors">Inicio</Link>
         <span>/</span>
-        <Link href="/analizar" className="hover:text-neutral-700 dark:hover:text-neutral-200">
-          Analizar
-        </Link>
-        <span>/</span>
-        <span className="text-neutral-700 dark:text-neutral-200 truncate max-w-[200px]">
-          {producto.nombre}
-        </span>
+        <span className="text-[var(--foreground)] truncate max-w-[240px]">{producto.nombre}</span>
       </nav>
 
       <ResultCard producto={producto} />
 
-      {/* Metadatos adicionales */}
-      <div className="rounded-xl border border-neutral-200 dark:border-neutral-700 divide-y divide-neutral-100 dark:divide-neutral-800">
+      {/* Metadatos */}
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden divide-y divide-[var(--border)]">
         {[
-          { label: "Elaborado por", valor: producto.elaborado_por },
-          { label: "Registro sanitario", valor: producto.registro_sanitario },
-          { label: "Código de barras", valor: producto.codigo_barras },
-          {
-            label: "Primera vez escaneado",
-            valor: new Date(producto.creado_en).toLocaleDateString("es-CL"),
-          },
+          { label: "Elaborado por",       valor: producto.elaborado_por },
+          { label: "Registro sanitario",  valor: producto.registro_sanitario },
+          { label: "Código de barras",    valor: producto.codigo_barras },
+          { label: "Primera vez visto",   valor: new Date(producto.creado_en).toLocaleDateString("es-CL") },
         ]
           .filter((f) => f.valor)
           .map(({ label, valor }) => (
             <div key={label} className="grid grid-cols-2 px-4 py-2.5 text-sm">
-              <span className="text-neutral-500 dark:text-neutral-400">{label}</span>
-              <span className="text-neutral-800 dark:text-neutral-200">{valor}</span>
+              <span className="text-[var(--muted)]">{label}</span>
+              <span className="text-[var(--foreground)]">{valor}</span>
             </div>
           ))}
       </div>
 
       {/* Ingredientes */}
       {producto.ingredientes.length > 0 && (
-        <div>
-          <h3 className="text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wide">
+        <div className="space-y-2">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
             Ingredientes
           </h3>
-          <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
+          <p className="text-sm text-[var(--muted)] leading-relaxed">
             {producto.ingredientes.join(", ")}
           </p>
         </div>
       )}
 
       {/* Reportar error */}
-      <div className="text-center pt-4">
-        <p className="text-xs text-neutral-400 dark:text-neutral-500">
+      <div className="text-center pt-2">
+        <p className="text-xs text-[var(--muted)]">
           ¿Los datos no son correctos?{" "}
           <a
             href="https://github.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-neutral-600"
+            className="underline hover:text-[var(--foreground)] transition-colors"
           >
             Reportar en GitHub
           </a>

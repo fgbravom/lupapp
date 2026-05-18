@@ -3,13 +3,16 @@
 export default function DonateButton() {
   return (
     <a
-      href="https://ko-fi.com"
+      href="https://www.buymeacoffee.com/fgbravom"
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF5E5B] hover:bg-[#e54e4b] text-white text-sm font-medium rounded-lg transition-colors"
     >
-      <span>☕</span>
-      <span>Apoyar con Ko-fi</span>
+      <img
+        height={36}
+        style={{ border: 0, height: 36 }}
+        src="https://img.buymeacoffee.com/button-api/?text=Regálame un cafecito&emoji=☕&slug=fgbravom&button_colour=40DCA5&font_colour=ffffff&font_family=Lato&outline_colour=000000&coffee_colour=FFDD00"
+        alt="Regálame un cafecito"
+      />
     </a>
   );
 }

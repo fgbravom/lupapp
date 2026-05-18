@@ -36,10 +36,15 @@ export async function buscarProductosPorNombre(
   const { data, error } = await db.database
     .from("productos")
     .select("*")
-    .textSearch("nombre", nombre, { type: "websearch", config: "spanish" })
+    .ilike("nombre", `%${nombre}%`)
+    .order("veces_escaneado", { ascending: false })
     .limit(10);
 
-  if (error || !data) return [];
+  if (error) {
+    console.error("[buscarProductosPorNombre] InsForge error:", error);
+    return [];
+  }
+  if (!data) return [];
   return data as Producto[];
 }
 

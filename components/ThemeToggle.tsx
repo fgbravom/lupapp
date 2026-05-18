@@ -2,22 +2,28 @@
 
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { IconSun, IconMoon } from "@/components/Icons";
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
-  const [montado, setMontado] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMontado(true), []);
+  useEffect(() => setMounted(true), []);
 
-  if (!montado) return <div className="w-8 h-8" />;
+  if (!mounted) return <div className="w-8 h-8" />;
+
+  const isDark = theme === "dark";
 
   return (
     <button
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="w-8 h-8 flex items-center justify-center rounded-lg text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-      aria-label="Cambiar tema"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+      aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
     >
-      {theme === "dark" ? "☀️" : "🌙"}
+      {isDark
+        ? <IconSun size={17} />
+        : <IconMoon size={17} />
+      }
     </button>
   );
 }

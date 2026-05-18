@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import ThemeToggle from "@/components/ThemeToggle";
 import AnalizarModal from "@/components/AnalizarModal";
+import Logo from "@/components/Logo";
+import { IconGithub, IconCoffee } from "@/components/Icons";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,65 +19,69 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" suppressHydrationWarning>
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-            <header className="border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm sticky top-0 z-40">
-              <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-                <a
-                  href="/"
-                  className="font-syne font-black text-xl text-neutral-900 dark:text-white tracking-tight"
-                >
-                  🔍 Lupapp
+
+            {/* ── Header ───────────────────────────────────────────────── */}
+            <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--background)]/85 backdrop-blur-md">
+              <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+                <a href="/" aria-label="Lupapp — inicio" className="flex-shrink-0">
+                  <Logo size="md" variant="full" />
                 </a>
-                <div className="flex items-center gap-3">
+
+                <div className="flex items-center gap-2">
                   <AnalizarModal
                     label="Analizar"
-                    className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[var(--brand)] text-white text-sm font-semibold hover:bg-[var(--brand-dark)] transition-colors"
                   />
                   <ThemeToggle />
                 </div>
               </div>
             </header>
 
-            <main className="max-w-3xl mx-auto px-4 py-8">{children}</main>
+            {/* ── Contenido ─────────────────────────────────────────────── */}
+            <main className="max-w-3xl mx-auto px-4 py-5 sm:py-10">{children}</main>
 
-            <footer className="border-t border-neutral-200 dark:border-neutral-800 mt-16 py-8">
-              <div className="max-w-3xl mx-auto px-4 text-center space-y-2">
-                <p className="text-xs text-neutral-400 dark:text-neutral-500 italic">
-                  App informativa. No reemplaza consejo nutricional profesional.
-                </p>
-                <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                  Lupapp es open source (MIT) —{" "}
+            {/* ── Footer ────────────────────────────────────────────────── */}
+            <footer className="border-t border-[var(--border)] mt-16">
+              <div className="max-w-3xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex flex-col items-center sm:items-start gap-1">
+                  <Logo size="sm" variant="full" />
+                  <p className="text-xs text-[var(--muted)]">
+                    App informativa. No reemplaza consejo nutricional profesional.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-4 text-xs text-[var(--muted)]">
                   <a
                     href="https://github.com"
-                    className="underline hover:text-neutral-600"
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 hover:text-[var(--foreground)] transition-colors"
                   >
+                    <IconGithub size={14} />
                     GitHub
-                  </a>{" "}
-                  ·{" "}
+                  </a>
                   <a
-                    href="https://ko-fi.com"
-                    className="underline hover:text-neutral-600"
+                    href="https://www.buymeacoffee.com/fgbravom"
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 hover:text-[var(--foreground)] transition-colors"
                   >
-                    Ko-fi
+                    <IconCoffee size={14} />
+                    Cafecito
                   </a>
-                </p>
+                </div>
               </div>
             </footer>
+
           </div>
         </ThemeProvider>
+
       </body>
     </html>
   );

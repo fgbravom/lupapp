@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import ResultCard from "./ResultCard";
 import SubidaManualModal from "./SubidaManualModal";
+import { getGradeInfo } from "@/lib/gradeColor";
+import { IconSearch, IconCamera, IconBarcode, IconArrowLeft } from "./Icons";
 import type { Producto } from "@/types";
 
 const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), { ssr: false });
@@ -15,47 +18,36 @@ type Estado =
   | { tipo: "resultado"; producto: Producto }
   | { tipo: "error"; mensaje: string };
 
-// ─── Miniatura de producto ────────────────────────────────────────────────────
+interface BuscadorProps {
+  onResultadoChange?: (tieneResultado: boolean) => void;
+}
 
-function ProductoRow({
-  producto,
-  onClick,
-}: {
-  producto: Producto;
-  onClick: () => void;
-}) {
-  function colorNota(n: number) {
-    if (n >= 6) return "text-[#1A6B3C]";
-    if (n >= 4) return "text-[#D4A017]";
-    return "text-[#CC0000]";
-  }
+// ─── Fila de producto en dropdown ─────────────────────────────────────────────
 
+function ProductoRow({ producto, onClick }: { producto: Producto; onClick: () => void }) {
+  const { color } = getGradeInfo(producto.nota_cl);
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors text-left"
+      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-black/4 dark:hover:bg-white/5 transition-colors text-left"
     >
-      <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden bg-neutral-200 dark:bg-neutral-600 flex items-center justify-center">
+      <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden bg-[var(--border)] flex items-center justify-center">
         {producto.imagen_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={producto.imagen_url} alt={producto.nombre} className="w-full h-full object-cover" />
         ) : (
-          <span className="text-xs font-bold text-neutral-500 dark:text-neutral-300">
+          <span className="text-xs font-bold text-[var(--muted)]">
             {(producto.nombre[0] ?? "?").toUpperCase()}
           </span>
         )}
       </div>
-
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">
-          {producto.nombre}
-        </p>
-        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+        <p className="text-sm font-medium text-[var(--foreground)] truncate">{producto.nombre}</p>
+        <p className="text-xs text-[var(--muted)]">
           {producto.marca ?? "Sin marca"} · {producto.veces_escaneado}× escaneado
         </p>
       </div>
-
-      <span className={`text-sm font-syne font-black flex-shrink-0 ${colorNota(producto.nota_cl)}`}>
+      <span className="text-sm font-syne font-black flex-shrink-0" style={{ color }}>
         {producto.nota_cl.toFixed(1)}
       </span>
     </button>
@@ -64,7 +56,7 @@ function ProductoRow({
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 
-export default function BuscadorProducto() {
+export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = {}) {
   const [estado, setEstado] = useState<Estado>({ tipo: "idle" });
   const [texto, setTexto] = useState("");
   const [mostrarBarcode, setMostrarBarcode] = useState(false);
@@ -74,13 +66,38 @@ export default function BuscadorProducto() {
   const [dropdownProductos, setDropdownProductos] = useState<Producto[]>([]);
   const [dropdownEsRecientes, setDropdownEsRecientes] = useState(false);
   const [cargandoDropdown, setCargandoDropdown] = useState(false);
+  const [dropdownStyle, setDropdownStyle] = useState<CSSProperties>({});
+  const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const contenedorRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    onResultadoChange?.(estado.tipo === "resultado");
+  }, [estado.tipo, onResultadoChange]);
+
+  const updateDropdownPos = useCallback(() => {
+    if (!inputRef.current) return;
+    const rect = inputRef.current.getBoundingClientRect();
+    setDropdownStyle({
+      position: "fixed",
+      top: rect.bottom + 4,
+      left: rect.left,
+      width: rect.width,
+      zIndex: 9999,
+    });
+  }, []);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (contenedorRef.current && !contenedorRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        contenedorRef.current && !contenedorRef.current.contains(target) &&
+        (!dropdownRef.current || !dropdownRef.current.contains(target))
+      ) {
         setDropdownAbierto(false);
       }
     };
@@ -91,11 +108,10 @@ export default function BuscadorProducto() {
   const cargarDropdown = useCallback(async (query: string) => {
     setCargandoDropdown(true);
     try {
-      const url =
-        query.trim().length >= 2
-          ? `/api/productos?nombre=${encodeURIComponent(query.trim())}`
-          : "/api/productos";
-      const res = await fetch(url);
+      const url = query.trim().length >= 2
+        ? `/api/productos?nombre=${encodeURIComponent(query.trim())}`
+        : "/api/productos";
+      const res = await fetch(url, { cache: "no-store" });
       const json = await res.json();
       setDropdownProductos(json.productos ?? []);
       setDropdownEsRecientes(!!json.esRecientes && query.trim().length < 2);
@@ -105,19 +121,17 @@ export default function BuscadorProducto() {
   }, []);
 
   const onFocusInput = useCallback(() => {
+    updateDropdownPos();
     setDropdownAbierto(true);
     cargarDropdown(texto);
-  }, [cargarDropdown, texto]);
+  }, [cargarDropdown, texto, updateDropdownPos]);
 
-  const onChangeTexto = useCallback(
-    (valor: string) => {
-      setTexto(valor);
-      setDropdownAbierto(true);
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => cargarDropdown(valor), 300);
-    },
-    [cargarDropdown]
-  );
+  const onChangeTexto = useCallback((valor: string) => {
+    setTexto(valor);
+    setDropdownAbierto(true);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => cargarDropdown(valor), 300);
+  }, [cargarDropdown]);
 
   const buscarPorTexto = useCallback(async () => {
     if (texto.trim().length < 2) return;
@@ -131,10 +145,7 @@ export default function BuscadorProducto() {
       } else if (json.productos?.length > 1) {
         setEstado({ tipo: "seleccionando", resultados: json.productos });
       } else {
-        setEstado({
-          tipo: "error",
-          mensaje: "No encontramos ese producto. ¿Lo tienes a mano? Puedes escanearlo.",
-        });
+        setEstado({ tipo: "error", mensaje: "No encontramos ese producto. ¿Lo tienes a mano? Puedes escanearlo." });
       }
     } catch {
       setEstado({ tipo: "error", mensaje: "Error al buscar. Intenta de nuevo." });
@@ -150,10 +161,7 @@ export default function BuscadorProducto() {
       if (json.producto) {
         setEstado({ tipo: "resultado", producto: json.producto });
       } else {
-        setEstado({
-          tipo: "error",
-          mensaje: `Código ${codigo} no está en nuestra base de datos aún.`,
-        });
+        setEstado({ tipo: "error", mensaje: `Código ${codigo} no está en nuestra base de datos aún.` });
       }
     } catch {
       setEstado({ tipo: "error", mensaje: "Error al buscar el código de barras." });
@@ -165,19 +173,16 @@ export default function BuscadorProducto() {
     await fetch(`/api/productos/${producto.id}`, { method: "PATCH" }).catch(() => {});
   }
 
-  const reiniciar = () => {
-    setEstado({ tipo: "idle" });
-    setTexto("");
-  };
-
+  const reiniciar = () => { setEstado({ tipo: "idle" }); setTexto(""); };
   const estaOcupado = estado.tipo === "buscando";
 
   return (
-    <div className="w-full max-w-xl mx-auto space-y-6">
+    <div className="w-full max-w-xl mx-auto space-y-5">
 
       {/* ── Barra de búsqueda ────────────────────────────────────────────── */}
-      <div className="flex gap-2">
-        <div className="flex-1 relative" ref={contenedorRef}>
+      <div className="space-y-2">
+        {/* Fila primaria: input + botón buscar */}
+        <div className="flex gap-2" ref={contenedorRef}>
           <input
             ref={inputRef}
             type="text"
@@ -190,111 +195,117 @@ export default function BuscadorProducto() {
             }}
             placeholder="Buscar producto por nombre…"
             disabled={estaOcupado}
-            className="w-full px-4 py-3 rounded-xl border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:opacity-50"
+            className="flex-1 px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/30 focus:border-[var(--brand)]/50 disabled:opacity-50 transition-shadow text-base"
             autoComplete="off"
           />
-
-          {/* Dropdown */}
-          {dropdownAbierto && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-xl z-30 overflow-hidden max-h-80 overflow-y-auto">
-              <div className="px-4 py-2 border-b border-neutral-100 dark:border-neutral-700 flex items-center justify-between">
-                <span className="text-xs font-medium text-neutral-400 dark:text-neutral-500">
-                  {cargandoDropdown
-                    ? "Buscando…"
-                    : dropdownEsRecientes
-                    ? "Productos en la base de datos"
-                    : `${dropdownProductos.length} resultado(s)`}
-                </span>
-                {cargandoDropdown && (
-                  <div className="w-3 h-3 border border-neutral-300 border-t-neutral-600 rounded-full animate-spin" />
-                )}
-              </div>
-
-              {!cargandoDropdown && dropdownProductos.length === 0 && (
-                <div className="px-4 py-4 text-center">
-                  <p className="text-sm text-neutral-400 dark:text-neutral-500">
-                    {texto.trim().length >= 2
-                      ? "Sin resultados"
-                      : "Aún no hay productos en la base de datos"}
-                  </p>
-                </div>
-              )}
-
-              {dropdownProductos.map((p) => (
-                <ProductoRow
-                  key={p.id}
-                  producto={p}
-                  onClick={() => { setDropdownAbierto(false); incrementarYMostrar(p); }}
-                />
-              ))}
-            </div>
-          )}
+          <button
+            onClick={() => { setDropdownAbierto(false); buscarPorTexto(); }}
+            disabled={estaOcupado || texto.trim().length < 2}
+            className="px-5 py-3 bg-[var(--brand)] text-white rounded-xl hover:bg-[var(--brand-dark)] transition-colors disabled:opacity-40 flex items-center gap-2 font-semibold text-sm flex-shrink-0"
+            aria-label="Buscar"
+          >
+            <IconSearch size={16} />
+            <span className="hidden sm:inline">Buscar</span>
+          </button>
         </div>
 
-        {/* Buscar */}
-        <button
-          onClick={() => { setDropdownAbierto(false); buscarPorTexto(); }}
-          disabled={estaOcupado || texto.trim().length < 2}
-          className="px-4 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-xl font-medium hover:bg-neutral-700 dark:hover:bg-neutral-100 transition-colors disabled:opacity-40"
-          aria-label="Buscar"
-        >
-          🔍
-        </button>
-
-        {/* Código de barras */}
-        <button
-          onClick={() => setMostrarBarcode(true)}
-          disabled={estaOcupado}
-          className="px-4 py-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-xl hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors disabled:opacity-40"
-          aria-label="Escanear código de barras"
-          title="Escanear código de barras"
-        >
-          📦
-        </button>
-
-        {/* Subida manual con foto */}
-        <button
-          onClick={() => setMostrarSubidaManual(true)}
-          disabled={estaOcupado}
-          className="px-4 py-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-xl hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors disabled:opacity-40"
-          aria-label="Agregar producto con foto"
-          title="Agregar producto con foto (OCR)"
-        >
-          📷
-        </button>
+        {/* Fila secundaria: acciones alternativas con label */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setMostrarSubidaManual(true)}
+            disabled={estaOcupado}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)] hover:border-[var(--foreground)]/20 transition-colors disabled:opacity-40 text-sm font-medium"
+          >
+            <IconCamera size={16} />
+            Fotografiar etiqueta
+          </button>
+          <button
+            onClick={() => setMostrarBarcode(true)}
+            disabled={estaOcupado}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)] hover:border-[var(--foreground)]/20 transition-colors disabled:opacity-40 text-sm font-medium"
+          >
+            <IconBarcode size={16} />
+            Código de barras
+          </button>
+        </div>
       </div>
 
-      {/* ── Estados ──────────────────────────────────────────────────────── */}
+      {/* Dropdown */}
+      {mounted && dropdownAbierto && createPortal(
+        <div
+          ref={dropdownRef}
+          className="bg-[var(--card)] rounded-xl border border-[var(--border)] shadow-xl overflow-hidden max-h-80 overflow-y-auto"
+          style={dropdownStyle}
+        >
+          <div className="px-4 py-2 border-b border-[var(--border)] flex items-center justify-between">
+            <span className="text-xs font-medium text-[var(--muted)]">
+              {cargandoDropdown
+                ? "Buscando…"
+                : dropdownEsRecientes
+                ? "Productos en la base de datos"
+                : `${dropdownProductos.length} resultado(s)`}
+            </span>
+            {cargandoDropdown && (
+              <div className="w-3 h-3 border border-[var(--border)] border-t-[var(--muted)] rounded-full animate-spin" />
+            )}
+          </div>
+
+          {!cargandoDropdown && dropdownProductos.length === 0 && (
+            <div className="px-4 py-5 text-center">
+              <p className="text-sm text-[var(--muted)]">
+                {texto.trim().length >= 2 ? "Sin resultados" : "Aún no hay productos en la base de datos"}
+              </p>
+            </div>
+          )}
+
+          {dropdownProductos.map((p) => (
+            <ProductoRow
+              key={p.id}
+              producto={p}
+              onClick={() => { setDropdownAbierto(false); incrementarYMostrar(p); }}
+            />
+          ))}
+        </div>,
+        document.body
+      )}
+
+      {/* ── Estados ───────────────────────────────────────────────────────── */}
       {estado.tipo === "buscando" && (
-        <div className="text-center py-8 text-neutral-500 dark:text-neutral-400">
-          <div className="inline-block w-8 h-8 border-2 border-neutral-300 border-t-neutral-600 rounded-full animate-spin mb-3" />
-          <p className="text-sm">Buscando…</p>
+        <div className="text-center py-10">
+          <div className="inline-block w-7 h-7 border-2 border-[var(--border)] border-t-[var(--brand)] rounded-full animate-spin mb-3" />
+          <p className="text-sm text-[var(--muted)]">Buscando…</p>
         </div>
       )}
 
       {estado.tipo === "seleccionando" && (
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-[var(--muted)] px-1 pb-1">
             Encontramos {estado.resultados.length} productos. ¿Cuál es?
           </p>
-          {estado.resultados.map((p) => (
-            <ProductoRow key={p.id} producto={p} onClick={() => incrementarYMostrar(p)} />
-          ))}
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden divide-y divide-[var(--border)]">
+            {estado.resultados.map((p) => (
+              <ProductoRow key={p.id} producto={p} onClick={() => incrementarYMostrar(p)} />
+            ))}
+          </div>
         </div>
       )}
 
       {estado.tipo === "error" && (
-        <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 space-y-3">
+        <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-4 space-y-3">
           <p className="text-sm text-red-700 dark:text-red-400">{estado.mensaje}</p>
           <div className="flex items-center gap-3">
-            <button onClick={reiniciar} className="text-xs text-red-600 dark:text-red-400 underline">
+            <button
+              onClick={reiniciar}
+              className="text-xs text-red-600 dark:text-red-400 underline"
+            >
               Intentar de nuevo
             </button>
             <button
               onClick={() => setMostrarSubidaManual(true)}
-              className="text-xs px-3 py-1.5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg"
+              className="text-xs inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--foreground)] text-[var(--background)] rounded-lg font-medium"
             >
-              📷 Agregar con foto
+              <IconCamera size={13} />
+              Agregar con foto
             </button>
           </div>
         </div>
@@ -304,9 +315,10 @@ export default function BuscadorProducto() {
         <div>
           <button
             onClick={reiniciar}
-            className="mb-4 text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors flex items-center gap-1"
+            className="mb-5 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors flex items-center gap-1.5"
           >
-            ← Buscar otro producto
+            <IconArrowLeft size={15} />
+            Buscar otro producto
           </button>
           <ResultCard producto={estado.producto} />
         </div>
