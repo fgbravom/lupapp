@@ -7,6 +7,7 @@ import { IconGithub, IconCoffee } from "@/components/Icons";
 import "./globals.css";
 import { DM_Sans } from "next/font/google";
 import { cn } from "@/lib/utils";
+import BuyMeCoffeeWidget from "@/components/BuyMeCoffeeWidget";
 
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -86,7 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           </div>
         </ThemeProvider>
-
+        <BuyMeCoffeeWidget />
       </body>
     </html>
   );

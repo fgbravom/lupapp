@@ -1,27 +1,40 @@
 "use client";
 
-import { useEffect } from "react";
-
 export default function BuyMeCoffeeWidget() {
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.setAttribute("data-name", "BMC-Widget");
-    script.setAttribute("data-cfasync", "false");
-    script.setAttribute("data-id", "fgbravom");
-    script.setAttribute("data-description", "Support me on Buy me a coffee!");
-    script.setAttribute("data-message", "Regálame un cafecito");
-    script.setAttribute("data-color", "#40DCA5");
-    script.setAttribute("data-position", "Right");
-    script.setAttribute("data-x_margin", "18");
-    script.setAttribute("data-y_margin", "18");
-    script.src = "https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js";
-    document.head.appendChild(script);
-
-    return () => {
-      if (document.head.contains(script)) document.head.removeChild(script);
-      document.getElementById("bmc-wbtn")?.remove();
-    };
-  }, []);
-
-  return null;
+  return (
+    <a
+      href="https://www.buymeacoffee.com/fgbravom"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Buy Me a Coffee"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: 64,
+        height: 64,
+        background: "rgb(64, 220, 165)",
+        color: "white",
+        borderRadius: 32,
+        position: "fixed",
+        right: 18,
+        bottom: 18,
+        boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 8px",
+        zIndex: 9999,
+        cursor: "pointer",
+        fontWeight: 600,
+        transition: "transform 0.25s",
+        textDecoration: "none",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="https://cdn.buymeacoffee.com/widget/assets/coffee%20cup.svg"
+        alt="Buy Me a Coffee"
+        style={{ height: 36, width: 36, margin: 0, padding: 0 }}
+      />
+    </a>
+  );
 }
