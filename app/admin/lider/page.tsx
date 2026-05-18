@@ -1,6 +1,14 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
+
+const SELLO_SVG: Record<string, string> = {
+  "ALTO EN AZÚCARES":         "/altoenazucares.svg",
+  "ALTO EN SODIO":            "/altoensodio.svg",
+  "ALTO EN GRASAS SATURADAS": "/altoengrasassaturadas.svg",
+  "ALTO EN CALORÍAS":         "/altoencalorias.svg",
+};
 
 type Estado = "pendiente" | "cargando" | "ok" | "error";
 
@@ -260,15 +268,20 @@ export default function AdminLiderPage() {
 
                     {/* Sellos */}
                     {item.resultado.sellos.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {item.resultado.sellos.map((s) => (
-                          <span
-                            key={s}
-                            className="text-xs bg-red-600 text-white font-bold px-2 py-0.5 rounded"
-                          >
-                            ⬛ {s}
-                          </span>
-                        ))}
+                      <div className="flex flex-wrap gap-3">
+                        {item.resultado.sellos.map((s) => {
+                          const svgSrc = SELLO_SVG[s];
+                          return svgSrc ? (
+                            <Image key={s} src={svgSrc} alt={s} width={48} height={48} className="w-12 h-12" />
+                          ) : (
+                            <span
+                              key={s}
+                              className="text-xs bg-red-600 text-white font-bold px-2 py-0.5 rounded"
+                            >
+                              {s}
+                            </span>
+                          );
+                        })}
                       </div>
                     )}
 
