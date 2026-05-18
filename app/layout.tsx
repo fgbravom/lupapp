@@ -11,6 +11,11 @@ export const metadata: Metadata = {
   description:
     "Analiza ingredientes y tabla nutricional de productos vendidos en Chile. Calificamos del 1.0 al 7.0 según la Ley 20.606.",
   keywords: ["alimentos Chile", "sellos nutricionales", "Ley 20.606", "etiquetado"],
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
   openGraph: {
     title: "Lupapp",
     description: "Ponemos los alimentos chilenos bajo la lupa",
