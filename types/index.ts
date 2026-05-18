@@ -9,6 +9,7 @@ export interface TablaNutricional {
   azucares_g: number | null;
   fibra_g: number | null;
   sodio_mg: number | null;
+  es_liquido?: boolean;
 }
 
 export interface Aditivo {
@@ -52,6 +53,9 @@ export interface DatosOCR {
   ingredientes: string[];
   tabla_nutricional: TablaNutricional;
 }
+
+// Claves numéricas de TablaNutricional (excluye es_liquido)
+export type NutriKey = keyof Omit<TablaNutricional, "es_liquido">;
 
 // ─── Evaluación detallada ───────────────────────────────────────────────────
 

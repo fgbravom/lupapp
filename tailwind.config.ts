@@ -10,6 +10,39 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // ─── shadcn (CSS vars) ────────────────────────────────────────────────
+        background:  "var(--background)",
+        foreground:  "var(--foreground)",
+        card: {
+          DEFAULT:    "var(--card)",
+          foreground: "var(--card-foreground)",
+        },
+        popover: {
+          DEFAULT:    "var(--popover)",
+          foreground: "var(--popover-foreground)",
+        },
+        primary: {
+          DEFAULT:    "var(--primary)",
+          foreground: "var(--primary-foreground)",
+        },
+        secondary: {
+          DEFAULT:    "var(--secondary)",
+          foreground: "var(--secondary-foreground)",
+        },
+        muted: {
+          DEFAULT:    "var(--muted)",
+          foreground: "var(--muted-foreground)",
+        },
+        accent: {
+          DEFAULT:    "var(--accent)",
+          foreground: "var(--accent-foreground)",
+        },
+        destructive: {
+          DEFAULT:    "var(--destructive)",
+        },
+        border: "var(--border)",
+        input:  "var(--input)",
+        ring:   "var(--ring)",
         // ─── Brand ───────────────────────────────────────────────────────────
         brand: {
           DEFAULT: "#E63030",
@@ -30,32 +63,23 @@ const config: Config = {
         ok:          "#00B86B",
         advertencia: "#FF9500",
         alerta:      "#E63030",
-        // ─── Superficie ──────────────────────────────────────────────────────
-        fondo:    "#FAFAF8",
-        carta:    "#FFFFFF",
-        borde:    "#E5E5E3",
-        texto:    "#111827",
-        muted:    "#6B7280",
-        // ─── Dark ────────────────────────────────────────────────────────────
-        "dark-fondo":  "#0D0D0B",
-        "dark-carta":  "#1A1A18",
-        "dark-borde":  "#2A2A28",
-        "dark-texto":  "#F9FAFB",
-        "dark-muted":  "#9CA3AF",
       },
       fontFamily: {
-        syne: ["Syne", "sans-serif"],
+        sans: ["DM Sans", "sans-serif"],
         dm:   ["DM Sans", "sans-serif"],
       },
       borderRadius: {
+        sm:   "var(--radius-sm)",
+        md:   "var(--radius-md)",
+        lg:   "var(--radius-lg)",
         "2xl": "1rem",
         "3xl": "1.5rem",
         "4xl": "2rem",
       },
       boxShadow: {
-        card:  "0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04)",
+        card:     "0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04)",
         "card-md": "0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
-        nota:  "0 0 0 4px rgb(0 0 0 / 0.06)",
+        nota:     "0 0 0 4px rgb(0 0 0 / 0.06)",
       },
     },
   },

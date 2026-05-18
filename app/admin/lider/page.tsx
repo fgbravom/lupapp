@@ -49,7 +49,7 @@ function EstadoBadge({ estado }: { estado: Estado }) {
   );
 }
 
-export default function AdminJumboPage() {
+export default function AdminLiderPage() {
   const [items, setItems] = useState<ItemURL[]>([]);
   const [input, setInput] = useState("");
   const [procesando, setProcesando] = useState(false);
@@ -59,7 +59,7 @@ export default function AdminJumboPage() {
     const urls = input
       .split(/[\n,]+/)
       .map((u) => u.trim())
-      .filter((u) => u.includes("jumbo.cl"));
+      .filter((u) => u.includes("lider.cl"));
 
     if (!urls.length) return;
 
@@ -91,7 +91,7 @@ export default function AdminJumboPage() {
       );
 
       try {
-        const res = await fetch("/api/admin/cargar-jumbo", {
+        const res = await fetch("/api/admin/cargar-lider", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url: item.url }),
@@ -130,7 +130,7 @@ export default function AdminJumboPage() {
         );
       }
 
-      // Pausa entre requests para no saturar Jumbo
+      // Pausa entre requests para no saturar Lider
       await new Promise((r) => setTimeout(r, 1500));
     }
 
@@ -143,22 +143,22 @@ export default function AdminJumboPage() {
     <div className="space-y-8">
       <div>
         <h1 className="font-black text-2xl text-neutral-900 dark:text-white">
-          Carga desde Jumbo.cl
+          Carga desde Líder
         </h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-          Pega uno o varios enlaces (uno por línea). Se cargan de a uno para no saturar.
+          Pega uno o varios enlaces de super.lider.cl (uno por línea). Se cargan de a uno para no saturar.
         </p>
       </div>
 
       {/* Input */}
       <div className="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-5 space-y-3">
         <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-          URL(s) de Jumbo.cl
+          URL(s) de Líder
         </label>
         <textarea
           className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 text-sm text-neutral-900 dark:text-white px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500 font-mono"
           rows={4}
-          placeholder={"https://www.jumbo.cl/nugget-crocante-sadia-400gr-2017037/p\nhttps://www.jumbo.cl/otro-producto/p"}
+          placeholder={"https://super.lider.cl/ip/platos-preparados/00780460893013\nhttps://super.lider.cl/ip/otra-categoria/codigo"}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
@@ -228,7 +228,6 @@ export default function AdminJumboPage() {
                 {item.estado === "ok" && item.resultado && (
                   <div className="border-t border-neutral-100 dark:border-neutral-700 px-4 py-4 space-y-3">
                     <div className="flex items-start gap-3">
-                      {/* Imagen de portada */}
                       {item.resultado.imagen_url && (
                         <img
                           src={item.resultado.imagen_url}
@@ -312,7 +311,7 @@ export default function AdminJumboPage() {
       {items.length === 0 && (
         <div className="text-center py-16 text-neutral-400 dark:text-neutral-600">
           <p className="text-4xl mb-3">🛒</p>
-          <p className="text-sm">Agrega URLs de Jumbo para empezar</p>
+          <p className="text-sm">Agrega URLs de Líder para empezar</p>
         </div>
       )}
     </div>

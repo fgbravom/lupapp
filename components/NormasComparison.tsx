@@ -23,13 +23,13 @@ export default function NormasComparison({ comparativa, tablaNutricional }: Prop
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden">
       <div className="px-4 py-3 border-b border-[var(--border)]">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
           Comparativa CL vs. UE (por 100g)
         </h3>
       </div>
 
       <div className="divide-y divide-[var(--border)]">
-        <div className="grid grid-cols-4 px-4 py-2 text-xs font-semibold text-[var(--muted)]">
+        <div className="grid grid-cols-4 px-4 py-2 text-xs font-semibold text-[var(--muted-foreground)]">
           <span>Nutriente</span>
           <span className="text-center">Valor</span>
           <span className="text-center">Norma CL</span>
@@ -42,7 +42,7 @@ export default function NormasComparison({ comparativa, tablaNutricional }: Prop
           return (
             <div key={key} className="grid grid-cols-4 px-4 py-3 text-sm items-center">
               <span className="text-[var(--foreground)] font-medium">{label}</span>
-              <span className="text-center text-[var(--muted)] font-mono text-xs">
+              <span className="text-center text-[var(--muted-foreground)] font-mono text-xs">
                 {valor != null ? `${valor} ${unidad}` : "—"}
               </span>
               <span className="text-center">
@@ -60,7 +60,7 @@ export default function NormasComparison({ comparativa, tablaNutricional }: Prop
 }
 
 function NormaBadge({ estado, limite, unidad }: { estado?: "cumple" | "excede"; limite: number; unidad: string }) {
-  if (!estado) return <span className="text-[var(--muted)] text-xs">—</span>;
+  if (!estado) return <span className="text-[var(--muted-foreground)] text-xs">—</span>;
   return (
     <span
       className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-semibold ${

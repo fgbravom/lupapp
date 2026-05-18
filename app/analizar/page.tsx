@@ -11,7 +11,7 @@ export default function AnalizarPage() {
   return (
     <div className="space-y-8">
       <div className="text-center space-y-2">
-        <h1 className="font-syne font-black text-3xl text-neutral-900 dark:text-white">
+        <h1 className="font-black text-3xl text-neutral-900 dark:text-white">
           Analizar producto
         </h1>
         <p className="text-neutral-500 dark:text-neutral-400">

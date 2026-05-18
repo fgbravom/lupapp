@@ -79,16 +79,16 @@ export default function SubidaManualModal({ onResultado, onCerrar }: Props) {
         {/* Header */}
         <div className="flex items-start justify-between p-5 border-b border-[var(--border)]">
           <div>
-            <h2 className="text-base font-syne font-bold text-[var(--foreground)]">
+            <h2 className="text-base font-bold text-[var(--foreground)]">
               Agregar producto con foto
             </h2>
-            <p className="text-xs text-[var(--muted)] mt-0.5">
+            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
               Gemini Vision extrae los datos automáticamente.
             </p>
           </div>
           <button
             onClick={onCerrar}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-black/5 dark:hover:bg-white/5 transition-colors ml-4"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-black/5 dark:hover:bg-white/5 transition-colors ml-4"
             aria-label="Cerrar"
           >
             <IconX size={17} />
@@ -96,7 +96,7 @@ export default function SubidaManualModal({ onResultado, onCerrar }: Props) {
         </div>
 
         <div className="p-5 space-y-4">
-          <p className="text-xs text-[var(--muted)]">
+          <p className="text-xs text-[var(--muted-foreground)]">
             Sube hasta 3 fotos. Portada da nombre y miniatura; ingredientes y tabla nutricional mejoran la nota.
           </p>
 
@@ -134,7 +134,7 @@ export default function SubidaManualModal({ onResultado, onCerrar }: Props) {
             <button
               onClick={onCerrar}
               disabled={fase.tipo === "procesando"}
-              className="flex-1 py-3 rounded-xl border border-[var(--border)] text-sm text-[var(--muted)] hover:bg-black/3 dark:hover:bg-white/5 transition-colors disabled:opacity-40"
+              className="flex-1 py-3 rounded-xl border border-[var(--border)] text-sm text-[var(--muted-foreground)] hover:bg-black/3 dark:hover:bg-white/5 transition-colors disabled:opacity-40"
             >
               Cancelar
             </button>

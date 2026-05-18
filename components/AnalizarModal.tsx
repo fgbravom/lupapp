@@ -50,17 +50,17 @@ export default function AnalizarModal({ label = "Analizar producto", className =
               <div className="flex items-center gap-3">
                 <Logo size="sm" variant="icon" />
                 <div>
-                  <h2 className="font-syne font-black text-base text-[var(--foreground)]">
+                  <h2 className="font-black text-base text-[var(--foreground)]">
                     Analizar producto
                   </h2>
-                  <p className="text-xs text-[var(--muted)] mt-0.5">
+                  <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
                     Busca, escanea o fotografía la etiqueta
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setAbierto(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                 aria-label="Cerrar"
               >
                 <IconX size={17} />

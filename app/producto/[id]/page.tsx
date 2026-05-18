@@ -25,7 +25,7 @@ export default async function ProductoPage({ params }: Props) {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-[var(--muted)]">
+      <nav className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
         <Link href="/" className="hover:text-[var(--foreground)] transition-colors">Inicio</Link>
         <span>/</span>
         <span className="text-[var(--foreground)] truncate max-w-[240px]">{producto.nombre}</span>
@@ -44,7 +44,7 @@ export default async function ProductoPage({ params }: Props) {
           .filter((f) => f.valor)
           .map(({ label, valor }) => (
             <div key={label} className="grid grid-cols-2 px-4 py-2.5 text-sm">
-              <span className="text-[var(--muted)]">{label}</span>
+              <span className="text-[var(--muted-foreground)]">{label}</span>
               <span className="text-[var(--foreground)]">{valor}</span>
             </div>
           ))}
@@ -53,10 +53,10 @@ export default async function ProductoPage({ params }: Props) {
       {/* Ingredientes */}
       {producto.ingredientes.length > 0 && (
         <div className="space-y-2">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
             Ingredientes
           </h3>
-          <p className="text-sm text-[var(--muted)] leading-relaxed">
+          <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">
             {producto.ingredientes.join(", ")}
           </p>
         </div>
@@ -64,7 +64,7 @@ export default async function ProductoPage({ params }: Props) {
 
       {/* Reportar error */}
       <div className="text-center pt-2">
-        <p className="text-xs text-[var(--muted)]">
+        <p className="text-xs text-[var(--muted-foreground)]">
           ¿Los datos no son correctos?{" "}
           <a
             href="https://github.com"

@@ -40,7 +40,7 @@ export default function GradeBadge({ nota, size = "md", showLabel = false, class
           style={{
             color,
             fontSize: d.font,
-            fontFamily: "Syne, sans-serif",
+            fontFamily: "DM Sans, sans-serif",
             fontWeight: 900,
             lineHeight: 1,
             letterSpacing: "-0.03em",

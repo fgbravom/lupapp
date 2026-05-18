@@ -1,4 +1,4 @@
-import type { TablaNutricional } from "@/types";
+import type { TablaNutricional, NutriKey } from "@/types";
 
 export interface DatosJumbo {
   nombre: string;
@@ -36,7 +36,7 @@ function parseNum(s: string): number | null {
 }
 
 // Mapea el label del nutriente (en texto de Jumbo) al campo del schema
-function mapNutriente(label: string): keyof TablaNutricional | null {
+function mapNutriente(label: string): NutriKey | null {
   const n = norm(label);
   if (n === "energia" || n.startsWith("energia")) return "calorias_kcal";
   if (n.startsWith("proteina")) return "proteinas_g";

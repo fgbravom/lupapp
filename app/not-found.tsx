@@ -4,7 +4,7 @@ export default function NotFound() {
   return (
     <div className="text-center space-y-4 py-16">
       <div className="text-6xl">🔍</div>
-      <h1 className="font-syne font-black text-3xl text-neutral-900 dark:text-white">
+      <h1 className="font-black text-3xl text-neutral-900 dark:text-white">
         Página no encontrada
       </h1>
       <p className="text-neutral-500 dark:text-neutral-400">

@@ -87,12 +87,12 @@ export default function UploadZone({ label, icono, archivo, onArchivo, deshabili
         </div>
       ) : (
         <div className="flex flex-col items-center gap-2 p-4 text-center">
-          <div className="w-9 h-9 rounded-xl bg-[var(--border)] flex items-center justify-center text-[var(--muted)]">
+          <div className="w-9 h-9 rounded-xl bg-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)]">
             {icono}
           </div>
           <div>
             <p className="text-xs font-semibold text-[var(--foreground)]">{label}</p>
-            <p className="text-xs text-[var(--muted)] mt-0.5">Toca o arrastra</p>
+            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Toca o arrastra</p>
           </div>
         </div>
       )}

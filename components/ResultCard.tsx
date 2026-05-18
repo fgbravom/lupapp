@@ -53,14 +53,14 @@ export default function ResultCard({ producto }: { producto: Producto }) {
             />
           )}
           <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-syne font-black text-[var(--foreground)] leading-tight">
+            <h2 className="text-xl font-black text-[var(--foreground)] leading-tight">
               {producto.nombre}
             </h2>
             {producto.marca && (
-              <p className="text-sm text-[var(--muted)] mt-0.5">{producto.marca}</p>
+              <p className="text-sm text-[var(--muted-foreground)] mt-0.5">{producto.marca}</p>
             )}
             {producto.veces_escaneado > 1 && (
-              <p className="text-xs text-[var(--muted)] mt-1.5 flex items-center gap-1.5">
+              <p className="text-xs text-[var(--muted-foreground)] mt-1.5 flex items-center gap-1.5">
                 <IconUsers size={13} />
                 Escaneado {producto.veces_escaneado} veces
               </p>
@@ -73,7 +73,7 @@ export default function ResultCard({ producto }: { producto: Producto }) {
       {/* ── 2. Sellos ALTO EN ─────────────────────────────────────────────── */}
       {ev.sellos_cl.length > 0 && (
         <section className="space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
             Sellos Ley 20.606
           </h3>
           <div className="flex flex-wrap gap-4">
@@ -103,7 +103,7 @@ export default function ResultCard({ producto }: { producto: Producto }) {
       {/* ── 3. Trampa de ración ───────────────────────────────────────────── */}
       {ev.trampa_racion && (
         <section className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-4 space-y-1.5">
-          <h3 className="font-syne font-bold text-amber-800 dark:text-amber-300 flex items-center gap-2 text-sm">
+          <h3 className="font-bold text-amber-800 dark:text-amber-300 flex items-center gap-2 text-sm">
             <IconAlertTriangle size={16} />
             {ev.trampa_racion.titulo}
           </h3>
@@ -115,7 +115,7 @@ export default function ResultCard({ producto }: { producto: Producto }) {
 
       {/* ── 4. Nutrientes — barras visuales ───────────────────────────────── */}
       <section className="space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
           Tabla nutricional por 100g
         </h3>
         <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden divide-y divide-[var(--border)]">
@@ -126,7 +126,7 @@ export default function ResultCard({ producto }: { producto: Producto }) {
                   <span className="text-sm font-medium text-[var(--foreground)] truncate">
                     {fila.label}
                   </span>
-                  <span className="text-xs font-mono text-[var(--muted)] flex-shrink-0">
+                  <span className="text-xs font-mono text-[var(--muted-foreground)] flex-shrink-0">
                     {fila.valor}
                   </span>
                 </div>
@@ -153,7 +153,7 @@ export default function ResultCard({ producto }: { producto: Producto }) {
 
       {/* ── 5. Veredicto por aspecto ──────────────────────────────────────── */}
       <section className="space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
           Veredicto por aspecto
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -168,19 +168,19 @@ export default function ResultCard({ producto }: { producto: Producto }) {
           style={{ background: bg, borderColor: ring }}
         >
           <div>
-            <p className="font-syne font-black text-[var(--foreground)] text-base">Nota final</p>
-            <p className="text-xs text-[var(--muted)] mt-0.5">
+            <p className="font-black text-[var(--foreground)] text-base">Nota final</p>
+            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
               Azúcar 25% · Sodio 25% · Grasas 20% · Ingredientes 20% · Ración 10%
             </p>
           </div>
           <div className="flex items-baseline gap-0.5">
             <span
-              className="font-syne font-black text-4xl tabular-nums leading-none"
+              className="font-black text-4xl tabular-nums leading-none"
               style={{ color }}
             >
               {ev.nota.toFixed(1)}
             </span>
-            <span className="text-base text-[var(--muted)] font-normal">/7</span>
+            <span className="text-base text-[var(--muted-foreground)] font-normal">/7</span>
           </div>
         </div>
       </section>
@@ -188,7 +188,7 @@ export default function ResultCard({ producto }: { producto: Producto }) {
       {/* ── 6. Aditivos ───────────────────────────────────────────────────── */}
       {ev.aditivos.length > 0 && (
         <section className="space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
             Aditivos detectados
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -200,7 +200,7 @@ export default function ResultCard({ producto }: { producto: Producto }) {
       )}
 
       {/* ── 7. Footer ─────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between pt-1 text-xs text-[var(--muted)]">
+      <div className="flex items-center justify-between pt-1 text-xs text-[var(--muted-foreground)]">
         <Link
           href={`/producto/${producto.id}`}
           className="flex items-center gap-1 hover:text-[var(--foreground)] transition-colors"
@@ -229,7 +229,7 @@ function SubNotaCard({ sub }: { sub: SubNota }) {
           style={{ backgroundColor: "var(--card)", borderColor: ring }}
         >
           <span
-            className="font-syne font-black text-sm tabular-nums leading-none tracking-tight"
+            className="font-black text-sm tabular-nums leading-none tracking-tight"
             style={{ color }}
           >
             {display}
@@ -239,7 +239,7 @@ function SubNotaCard({ sub }: { sub: SubNota }) {
           <p className="text-xs font-semibold text-[var(--foreground)] leading-tight">{sub.aspecto}</p>
           {sub.detalle && (
             <p
-              className="text-xs text-[var(--muted)] mt-0.5 leading-tight"
+              className="text-xs text-[var(--muted-foreground)] mt-0.5 leading-tight"
               style={{ overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}
             >
               {sub.detalle}

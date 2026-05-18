@@ -58,7 +58,7 @@ export default function BarcodeScanner({ onDetectado, onCerrar }: Props) {
     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
       <div className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-sm overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-700">
-          <h2 className="font-syne font-bold text-neutral-900 dark:text-white">
+          <h2 className="font-bold text-neutral-900 dark:text-white">
             Escanear código de barras
           </h2>
           <button
