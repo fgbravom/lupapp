@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import ResultCard from "./ResultCard";
 import SubidaManualModal from "./SubidaManualModal";
 import { getGradeInfo } from "@/lib/gradeColor";
+import { guardarReciente } from "@/lib/recientes";
 import { IconSearch, IconCamera, IconBarcode, IconArrowLeft } from "./Icons";
 import type { Producto } from "@/types";
 
@@ -36,18 +37,18 @@ function ProductoRow({ producto, onClick }: { producto: Producto; onClick: () =>
           // eslint-disable-next-line @next/next/no-img-element
           <img src={producto.imagen_url} alt={producto.nombre} className="w-full h-full object-cover" />
         ) : (
-          <span className="text-xs font-bold text-[var(--muted)]">
+          <span className="text-xs font-bold text-[var(--muted-foreground)]">
             {(producto.nombre[0] ?? "?").toUpperCase()}
           </span>
         )}
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-[var(--foreground)] truncate">{producto.nombre}</p>
-        <p className="text-xs text-[var(--muted)]">
+        <p className="text-xs text-[var(--muted-foreground)]">
           {producto.marca ?? "Sin marca"} · {producto.veces_escaneado}× escaneado
         </p>
       </div>
-      <span className="text-sm font-syne font-black flex-shrink-0" style={{ color }}>
+      <span className="text-sm font-black flex-shrink-0" style={{ color }}>
         {producto.nota_cl.toFixed(1)}
       </span>
     </button>
@@ -170,6 +171,14 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
 
   async function incrementarYMostrar(producto: Producto) {
     setEstado({ tipo: "resultado", producto });
+    guardarReciente({
+      id: producto.id,
+      nombre: producto.nombre,
+      marca: producto.marca,
+      nota_cl: producto.nota_cl,
+      imagen_url: producto.imagen_url,
+      sellos_cl: producto.sellos_cl,
+    });
     await fetch(`/api/productos/${producto.id}`, { method: "PATCH" }).catch(() => {});
   }
 
@@ -195,7 +204,7 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
             }}
             placeholder="Buscar producto por nombre…"
             disabled={estaOcupado}
-            className="flex-1 px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/30 focus:border-[var(--brand)]/50 disabled:opacity-50 transition-shadow text-base"
+            className="flex-1 px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/30 focus:border-[var(--brand)]/50 disabled:opacity-50 transition-shadow text-base"
             autoComplete="off"
           />
           <button
@@ -214,7 +223,7 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
           <button
             onClick={() => setMostrarSubidaManual(true)}
             disabled={estaOcupado}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)] hover:border-[var(--foreground)]/20 transition-colors disabled:opacity-40 text-sm font-medium"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--foreground)]/20 transition-colors disabled:opacity-40 text-sm font-medium"
           >
             <IconCamera size={16} />
             Fotografiar etiqueta
@@ -222,7 +231,7 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
           <button
             onClick={() => setMostrarBarcode(true)}
             disabled={estaOcupado}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--muted)] hover:text-[var(--foreground)] hover:border-[var(--foreground)]/20 transition-colors disabled:opacity-40 text-sm font-medium"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--foreground)]/20 transition-colors disabled:opacity-40 text-sm font-medium"
           >
             <IconBarcode size={16} />
             Código de barras
@@ -238,7 +247,7 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
           style={dropdownStyle}
         >
           <div className="px-4 py-2 border-b border-[var(--border)] flex items-center justify-between">
-            <span className="text-xs font-medium text-[var(--muted)]">
+            <span className="text-xs font-medium text-[var(--muted-foreground)]">
               {cargandoDropdown
                 ? "Buscando…"
                 : dropdownEsRecientes
@@ -246,13 +255,13 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
                 : `${dropdownProductos.length} resultado(s)`}
             </span>
             {cargandoDropdown && (
-              <div className="w-3 h-3 border border-[var(--border)] border-t-[var(--muted)] rounded-full animate-spin" />
+              <div className="w-3 h-3 border border-[var(--border)] border-t-[var(--muted-foreground)] rounded-full animate-spin" />
             )}
           </div>
 
           {!cargandoDropdown && dropdownProductos.length === 0 && (
             <div className="px-4 py-5 text-center">
-              <p className="text-sm text-[var(--muted)]">
+              <p className="text-sm text-[var(--muted-foreground)]">
                 {texto.trim().length >= 2 ? "Sin resultados" : "Aún no hay productos en la base de datos"}
               </p>
             </div>
@@ -273,13 +282,13 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
       {estado.tipo === "buscando" && (
         <div className="text-center py-10">
           <div className="inline-block w-7 h-7 border-2 border-[var(--border)] border-t-[var(--brand)] rounded-full animate-spin mb-3" />
-          <p className="text-sm text-[var(--muted)]">Buscando…</p>
+          <p className="text-sm text-[var(--muted-foreground)]">Buscando…</p>
         </div>
       )}
 
       {estado.tipo === "seleccionando" && (
         <div className="space-y-1">
-          <p className="text-sm font-medium text-[var(--muted)] px-1 pb-1">
+          <p className="text-sm font-medium text-[var(--muted-foreground)] px-1 pb-1">
             Encontramos {estado.resultados.length} productos. ¿Cuál es?
           </p>
           <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden divide-y divide-[var(--border)]">
@@ -315,7 +324,7 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
         <div>
           <button
             onClick={reiniciar}
-            className="mb-5 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors flex items-center gap-1.5"
+            className="mb-5 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors flex items-center gap-1.5"
           >
             <IconArrowLeft size={15} />
             Buscar otro producto

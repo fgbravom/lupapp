@@ -1,19 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import BuscadorProducto from "./BuscadorProducto";
 import GradeBadge from "./GradeBadge";
 import { IconCamera, IconSparkles } from "./Icons";
+import { cargarRecientes, type ProductoReciente } from "@/lib/recientes";
+import { getGradeInfo } from "@/lib/gradeColor";
 
 // ─── Datos ────────────────────────────────────────────────────────────────────
 
 const ESCALA = [
-  { nota: 7, label: "Excelente",  desc: "Sin sellos ni aditivos problemáticos",     pct: 100, color: "#00B86B" },
-  { nota: 5, label: "Bueno",      desc: "Uno o dos aspectos por mejorar",            pct: 64,  color: "#8BC34A" },
-  { nota: 4, label: "Suficiente", desc: "Aprobado, pero con observaciones claras",   pct: 43,  color: "#FF9500" },
-  { nota: 3, label: "Deficiente", desc: "Varios sellos o aditivos de riesgo",        pct: 29,  color: "#FF5722" },
-  { nota: 1, label: "Reprobado",  desc: "Múltiples alertas. No recomendado",         pct: 7,   color: "#E63030" },
+  { nota: 7, label: "Excelente",      desc: "Sin sellos ni aditivos problemáticos",     pct: 100, color: "#00B86B" },
+  { nota: 6, label: "Muy bueno",      desc: "Casi perfecto, mínimas observaciones",      pct: 82,  color: "#4CAF76" },
+  { nota: 5, label: "Bueno",          desc: "Uno o dos aspectos por mejorar",            pct: 64,  color: "#8BC34A" },
+  { nota: 4, label: "Suficiente",     desc: "Aprobado, pero con observaciones claras",   pct: 43,  color: "#FF9500" },
+  { nota: 3, label: "Deficiente",     desc: "Varios sellos o aditivos de riesgo",        pct: 29,  color: "#FF5722" },
+  { nota: 2, label: "Muy deficiente", desc: "Producto con serias alertas nutricionales", pct: 18,  color: "#F03333" },
+  { nota: 1, label: "Reprobado",      desc: "Múltiples alertas. No recomendado",         pct: 7,   color: "#E63030" },
 ];
 
 const SELLOS = [
@@ -35,6 +40,11 @@ const CRITERIOS = [
 
 export default function HomeContent() {
   const [tieneResultado, setTieneResultado] = useState(false);
+  const [recientes, setRecientes] = useState<ProductoReciente[]>([]);
+
+  useEffect(() => {
+    setRecientes(cargarRecientes());
+  }, [tieneResultado]);
 
   return (
     <div className="space-y-12 sm:space-y-20">
@@ -46,7 +56,7 @@ export default function HomeContent() {
             Descubre la nota real<br />
             <span style={{ color: "var(--brand)" }}>de lo que comes.</span>
           </h1>
-          <p className="text-lg text-[var(--muted)]">
+          <p className="text-lg text-[var(--muted-foreground)]">
             Calificamos alimentos del{" "}
             <strong className="text-[var(--foreground)]">1.0 al 7.0</strong>{" "}
             según la Ley&nbsp;20.606. Sin vueltas, sin eufemismos.
@@ -57,19 +67,49 @@ export default function HomeContent() {
           <BuscadorProducto onResultadoChange={setTieneResultado} />
         </div>
 
-        {/* Ejemplos decorativos */}
-        {!tieneResultado && (
-          <div className="flex items-end justify-center gap-6 pt-1 animate-fade-up">
-            {[
-              { nota: 6.8, nombre: "Almendras" },
-              { nota: 4.2, nombre: "Yogurt c/ frutas" },
-              { nota: 1.8, nombre: "Bebida azucarada" },
-            ].map((ej) => (
-              <div key={ej.nombre} className="flex flex-col items-center gap-2">
-                <GradeBadge nota={ej.nota} size="md" />
-                <span className="text-xs text-[var(--muted)] font-medium">{ej.nombre}</span>
-              </div>
-            ))}
+        {/* Últimos productos buscados */}
+        {!tieneResultado && recientes.length > 0 && (
+          <div className="w-full max-w-xl animate-fade-up space-y-2">
+            <p className="text-xs font-medium text-[var(--muted-foreground)] text-left px-1">
+              Últimas búsquedas
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {recientes.map((p) => {
+                const { color, bg } = getGradeInfo(p.nota_cl);
+                return (
+                  <Link
+                    key={p.id}
+                    href={`/producto/${p.id}`}
+                    className="flex flex-col items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 hover:border-[var(--brand)]/40 hover:shadow-sm transition-all text-center"
+                  >
+                    <div className="w-10 h-10 rounded-lg overflow-hidden bg-[var(--border)] flex items-center justify-center flex-shrink-0">
+                      {p.imagen_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.imagen_url} alt={p.nombre} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-sm font-bold text-[var(--muted-foreground)]">
+                          {(p.nombre[0] ?? "?").toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div className="min-w-0 w-full space-y-0.5">
+                      <p className="text-xs font-semibold text-[var(--foreground)] leading-tight line-clamp-2">
+                        {p.nombre}
+                      </p>
+                      {p.marca && (
+                        <p className="text-[10px] text-[var(--muted-foreground)] truncate">{p.marca}</p>
+                      )}
+                    </div>
+                    <span
+                      className="text-sm font-black rounded-md px-1.5 py-0.5"
+                      style={{ color, background: bg }}
+                    >
+                      {p.nota_cl.toFixed(1)}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         )}
       </section>
@@ -80,10 +120,10 @@ export default function HomeContent() {
           {/* ── La escala ──────────────────────────────────────────────────── */}
           <section className="space-y-6 animate-fade-up">
             <div className="space-y-1">
-              <h2 className="font-syne font-bold text-2xl text-[var(--foreground)]">
+              <h2 className="font-bold text-2xl text-[var(--foreground)]">
                 La escala que ya conoces
               </h2>
-              <p className="text-sm text-[var(--muted)]">
+              <p className="text-sm text-[var(--muted-foreground)]">
                 La misma del colegio chileno, aplicada a lo que comes.
               </p>
             </div>
@@ -95,7 +135,7 @@ export default function HomeContent() {
                   <div className="flex-1 min-w-0 space-y-1.5">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-semibold text-[var(--foreground)]">{item.label}</span>
-                      <span className="text-xs text-[var(--muted)]">{item.desc}</span>
+                      <span className="text-xs text-[var(--muted-foreground)]">{item.desc}</span>
                     </div>
                     <div className="h-2 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
                       <div
@@ -112,10 +152,10 @@ export default function HomeContent() {
           {/* ── Cómo funciona ──────────────────────────────────────────────── */}
           <section className="space-y-8 animate-fade-up">
             <div className="space-y-1">
-              <h2 className="font-syne font-bold text-2xl text-[var(--foreground)]">
+              <h2 className="font-bold text-2xl text-[var(--foreground)]">
                 ¿Cómo funciona?
               </h2>
-              <p className="text-sm text-[var(--muted)]">Tres pasos. Sin registro. Sin costo.</p>
+              <p className="text-sm text-[var(--muted-foreground)]">Tres pasos. Sin registro. Sin costo.</p>
             </div>
 
             <div className="grid sm:grid-cols-3 gap-4">
@@ -150,37 +190,11 @@ export default function HomeContent() {
                     <span className="text-xs font-bold tracking-widest uppercase" style={{ color: "var(--brand)" }}>
                       {paso.num}
                     </span>
-                    <h3 className="font-syne font-bold text-base text-[var(--foreground)]">
+                    <h3 className="font-bold text-base text-[var(--foreground)]">
                       {paso.titulo}
                     </h3>
-                    <p className="text-sm text-[var(--muted)] leading-relaxed">{paso.desc}</p>
+                    <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">{paso.desc}</p>
                   </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* ── Sellos MINSAL ──────────────────────────────────────────────── */}
-          <section className="space-y-6 animate-fade-up">
-            <div className="space-y-1">
-              <h2 className="font-syne font-bold text-2xl text-[var(--foreground)]">
-                Detectamos los sellos automáticamente
-              </h2>
-              <p className="text-sm text-[var(--muted)]">
-                Los octágonos de la Ley 20.606 son el primer filtro de nuestra evaluación.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {SELLOS.map((s) => (
-                <div
-                  key={s.label}
-                  className="flex flex-col items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4"
-                >
-                  <Image src={s.src} alt={s.label} width={72} height={72} className="w-16 h-16" />
-                  <span className="text-center text-xs font-bold text-[var(--foreground)] leading-tight">
-                    {s.label}
-                  </span>
                 </div>
               ))}
             </div>
@@ -189,10 +203,10 @@ export default function HomeContent() {
           {/* ── Metodología ────────────────────────────────────────────────── */}
           <section id="metodologia" className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 space-y-5 animate-fade-up">
             <div className="space-y-1">
-              <h2 className="font-syne font-bold text-lg text-[var(--foreground)]">
+              <h2 className="font-bold text-lg text-[var(--foreground)]">
                 ¿Cómo calculamos la nota?
               </h2>
-              <p className="text-sm text-[var(--muted)]">
+              <p className="text-sm text-[var(--muted-foreground)]">
                 Partimos de <strong className="text-[var(--foreground)]">7.0</strong> y descontamos:
               </p>
             </div>
@@ -201,19 +215,41 @@ export default function HomeContent() {
               {CRITERIOS.map((c) => (
                 <div key={c.texto} className="flex items-center gap-3">
                   <span
-                    className="font-syne font-black text-sm tabular-nums flex-shrink-0 w-12 text-right"
+                    className="font-black text-sm tabular-nums flex-shrink-0 w-12 text-right"
                     style={{ color: c.color }}
                   >
                     {c.puntos}
                   </span>
-                  <span className="text-sm text-[var(--muted)]">{c.texto}</span>
+                  <span className="text-sm text-[var(--muted-foreground)]">{c.texto}</span>
                 </div>
               ))}
             </div>
 
-            <p className="text-xs text-[var(--muted)]">
+            <p className="text-xs text-[var(--muted-foreground)]">
               Mínimo: 1.0 · Máximo: 7.0 · Fuente: Ley 20.606, DS 977/96, Reglamento UE 1169/2011
             </p>
+          </section>
+
+          {/* ── Sellos MINSAL ──────────────────────────────────────────────── */}
+          <section className="space-y-6 animate-fade-up">
+            <div className="space-y-1">
+              <h2 className="font-bold text-2xl text-[var(--foreground)]">
+                Detectamos los sellos automáticamente
+              </h2>
+              <p className="text-sm text-[var(--muted-foreground)]">
+                Los octágonos de la Ley 20.606 son el primer filtro de nuestra evaluación.
+              </p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-8 sm:gap-12">
+              {SELLOS.map((s) => (
+                <div key={s.label} className="flex flex-col items-center gap-3">
+                  <Image src={s.src} alt={s.label} width={96} height={96} className="w-20 h-20 sm:w-24 sm:h-24 drop-shadow-md" />
+                  <span className="text-center text-xs font-bold text-[var(--foreground)] leading-tight max-w-[90px]">
+                    {s.label}
+                  </span>
+                </div>
+              ))}
+            </div>
           </section>
 
           {/* ── CTA final ──────────────────────────────────────────────────── */}
@@ -224,10 +260,10 @@ export default function HomeContent() {
               <GradeBadge nota={2} size="sm" showLabel />
             </div>
             <div className="space-y-2">
-              <h2 className="font-syne font-bold text-2xl text-[var(--foreground)]">
+              <h2 className="font-bold text-2xl text-[var(--foreground)]">
                 Empieza a saber lo que comes.
               </h2>
-              <p className="text-sm text-[var(--muted)]">Gratis, sin registro, sin publicidad.</p>
+              <p className="text-sm text-[var(--muted-foreground)]">Gratis, sin registro, sin publicidad.</p>
             </div>
           </section>
         </>
