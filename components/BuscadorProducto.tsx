@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect, CSSProperties } from "react";
-import { createPortal } from "react-dom";
+import { useState, useCallback, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 import ResultCard from "./ResultCard";
 import SubidaManualModal from "./SubidaManualModal";
@@ -67,38 +66,18 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
   const [dropdownProductos, setDropdownProductos] = useState<Producto[]>([]);
   const [dropdownEsRecientes, setDropdownEsRecientes] = useState(false);
   const [cargandoDropdown, setCargandoDropdown] = useState(false);
-  const [dropdownStyle, setDropdownStyle] = useState<CSSProperties>({});
-  const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const contenedorRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     onResultadoChange?.(estado.tipo === "resultado");
   }, [estado.tipo, onResultadoChange]);
 
-  const updateDropdownPos = useCallback(() => {
-    if (!inputRef.current) return;
-    const rect = inputRef.current.getBoundingClientRect();
-    setDropdownStyle({
-      position: "fixed",
-      top: rect.bottom + 4,
-      left: rect.left,
-      width: rect.width,
-      zIndex: 9999,
-    });
-  }, []);
-
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       const target = e.target as Node;
-      if (
-        contenedorRef.current && !contenedorRef.current.contains(target) &&
-        (!dropdownRef.current || !dropdownRef.current.contains(target))
-      ) {
+      if (contenedorRef.current && !contenedorRef.current.contains(target)) {
         setDropdownAbierto(false);
       }
     };
@@ -122,10 +101,9 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
   }, []);
 
   const onFocusInput = useCallback(() => {
-    updateDropdownPos();
     setDropdownAbierto(true);
     cargarDropdown(texto);
-  }, [cargarDropdown, texto, updateDropdownPos]);
+  }, [cargarDropdown, texto]);
 
   const onChangeTexto = useCallback((valor: string) => {
     setTexto(valor);
@@ -192,21 +170,58 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
       <div className="space-y-2">
         {/* Fila primaria: input + botón buscar */}
         <div className="flex gap-2" ref={contenedorRef}>
-          <input
-            ref={inputRef}
-            type="text"
-            value={texto}
-            onChange={(e) => onChangeTexto(e.target.value)}
-            onFocus={onFocusInput}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") { setDropdownAbierto(false); buscarPorTexto(); }
-              if (e.key === "Escape") setDropdownAbierto(false);
-            }}
-            placeholder="Buscar producto por nombre…"
-            disabled={estaOcupado}
-            className="flex-1 px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/30 focus:border-[var(--brand)]/50 disabled:opacity-50 transition-shadow text-base"
-            autoComplete="off"
-          />
+          <div className="relative flex-1">
+            <input
+              ref={inputRef}
+              type="text"
+              value={texto}
+              onChange={(e) => onChangeTexto(e.target.value)}
+              onFocus={onFocusInput}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") { setDropdownAbierto(false); buscarPorTexto(); }
+                if (e.key === "Escape") setDropdownAbierto(false);
+              }}
+              placeholder="Buscar producto por nombre…"
+              disabled={estaOcupado}
+              className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/30 focus:border-[var(--brand)]/50 disabled:opacity-50 transition-shadow text-base"
+              autoComplete="off"
+            />
+
+            {/* Dropdown anclado al input */}
+            {dropdownAbierto && (
+              <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-[var(--card)] rounded-xl border border-[var(--border)] shadow-xl overflow-hidden max-h-80 overflow-y-auto">
+                <div className="px-4 py-2 border-b border-[var(--border)] flex items-center justify-between">
+                  <span className="text-xs font-medium text-[var(--muted-foreground)]">
+                    {cargandoDropdown
+                      ? "Buscando…"
+                      : dropdownEsRecientes
+                      ? "Productos en la base de datos"
+                      : `${dropdownProductos.length} resultado(s)`}
+                  </span>
+                  {cargandoDropdown && (
+                    <div className="w-3 h-3 border border-[var(--border)] border-t-[var(--muted-foreground)] rounded-full animate-spin" />
+                  )}
+                </div>
+
+                {!cargandoDropdown && dropdownProductos.length === 0 && (
+                  <div className="px-4 py-5 text-center">
+                    <p className="text-sm text-[var(--muted-foreground)]">
+                      {texto.trim().length >= 2 ? "Sin resultados" : "Aún no hay productos en la base de datos"}
+                    </p>
+                  </div>
+                )}
+
+                {dropdownProductos.map((p) => (
+                  <ProductoRow
+                    key={p.id}
+                    producto={p}
+                    onClick={() => { setDropdownAbierto(false); incrementarYMostrar(p); }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
           <button
             onClick={() => { setDropdownAbierto(false); buscarPorTexto(); }}
             disabled={estaOcupado || texto.trim().length < 2}
@@ -238,45 +253,6 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
           </button>
         </div>
       </div>
-
-      {/* Dropdown */}
-      {mounted && dropdownAbierto && createPortal(
-        <div
-          ref={dropdownRef}
-          className="bg-[var(--card)] rounded-xl border border-[var(--border)] shadow-xl overflow-hidden max-h-80 overflow-y-auto"
-          style={dropdownStyle}
-        >
-          <div className="px-4 py-2 border-b border-[var(--border)] flex items-center justify-between">
-            <span className="text-xs font-medium text-[var(--muted-foreground)]">
-              {cargandoDropdown
-                ? "Buscando…"
-                : dropdownEsRecientes
-                ? "Productos en la base de datos"
-                : `${dropdownProductos.length} resultado(s)`}
-            </span>
-            {cargandoDropdown && (
-              <div className="w-3 h-3 border border-[var(--border)] border-t-[var(--muted-foreground)] rounded-full animate-spin" />
-            )}
-          </div>
-
-          {!cargandoDropdown && dropdownProductos.length === 0 && (
-            <div className="px-4 py-5 text-center">
-              <p className="text-sm text-[var(--muted-foreground)]">
-                {texto.trim().length >= 2 ? "Sin resultados" : "Aún no hay productos en la base de datos"}
-              </p>
-            </div>
-          )}
-
-          {dropdownProductos.map((p) => (
-            <ProductoRow
-              key={p.id}
-              producto={p}
-              onClick={() => { setDropdownAbierto(false); incrementarYMostrar(p); }}
-            />
-          ))}
-        </div>,
-        document.body
-      )}
 
       {/* ── Estados ───────────────────────────────────────────────────────── */}
       {estado.tipo === "buscando" && (
