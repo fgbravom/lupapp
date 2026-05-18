@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import ThemeToggle from "@/components/ThemeToggle";
-import AnalizarModal from "@/components/AnalizarModal";
 import Logo from "@/components/Logo";
 import { IconGithub, IconCoffee } from "@/components/Icons";
 import "./globals.css";
@@ -39,10 +38,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </a>
 
                 <div className="flex items-center gap-2">
-                  <AnalizarModal
-                    label="Analizar"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[var(--brand)] text-white text-sm font-semibold hover:bg-[var(--brand-dark)] transition-colors"
-                  />
                   <ThemeToggle />
                 </div>
               </div>
