@@ -102,4 +102,5 @@ export interface EvaluacionDetallada extends ResultadoEvaluacion {
   trampa_racion: TrampaRacion | null;
   sub_notas: SubNota[];
   valores_por_100g: TablaNutricional;
+  veredicto: string;
 }

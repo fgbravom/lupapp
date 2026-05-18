@@ -70,7 +70,18 @@ export default function ResultCard({ producto }: { producto: Producto }) {
         </div>
       </div>
 
-      {/* ── 2. Sellos ALTO EN ─────────────────────────────────────────────── */}
+      {/* ── 2. Veredicto ─────────────────────────────────────────────────── */}
+      <section
+        className="rounded-xl border px-4 py-3.5"
+        style={{ background: "var(--card)", borderColor: "var(--border)" }}
+      >
+        <p className="text-sm leading-relaxed text-[var(--foreground)]">
+          <span className="font-semibold">Por qué esta nota: </span>
+          {ev.veredicto}
+        </p>
+      </section>
+
+      {/* ── 3. Sellos ALTO EN ─────────────────────────────────────────────── */}
       {ev.sellos_cl.length > 0 && (
         <section className="space-y-3">
           <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
@@ -170,7 +181,7 @@ export default function ResultCard({ producto }: { producto: Producto }) {
           <div>
             <p className="font-black text-[var(--foreground)] text-base">Nota final</p>
             <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
-              Azúcar 25% · Sodio 25% · Grasas 20% · Ingredientes 20% · Ración 10%
+              Azúcar 25% · Sodio 25% · Grasas 20% · Calorías 15% · Ingredientes 15%
             </p>
           </div>
           <div className="flex items-baseline gap-0.5">

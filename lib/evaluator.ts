@@ -358,6 +358,8 @@ export function evaluar(
     },
   ];
 
+  const veredicto = generarVeredicto(sellos, por100, U, esLiquido, sub_notas);
+
   return {
     nota,
     sellos_cl: sellos,
@@ -367,7 +369,68 @@ export function evaluar(
     trampa_racion,
     sub_notas,
     valores_por_100g: por100,
+    veredicto,
   };
+}
+
+// ─── Veredicto en lenguaje natural ───────────────────────────────────────────
+
+function generarVeredicto(
+  sellos: string[],
+  por100: TablaNutricional,
+  U: { calorias_alto_kcal: number; azucares_alto_g: number; sodio_alto_mg: number; grasas_saturadas_alto_g: number },
+  esLiquido: boolean,
+  sub_notas: SubNota[]
+): string {
+  const ref = esLiquido ? "100 ml" : "100 g";
+
+  if (sellos.length === 0) {
+    const enRiesgo = sub_notas.find(
+      (s) => ["Calorías", "Azúcar", "Sodio", "Grasas"].includes(s.aspecto) && s.nota < 4.0
+    );
+    if (enRiesgo) {
+      return `No tiene sellos de advertencia, pero su ${enRiesgo.aspecto.toLowerCase()} (${enRiesgo.detalle}) está cerca del límite legal — por eso la nota no sube más.`;
+    }
+    return "No tiene sellos de advertencia. Todos sus nutrientes críticos están dentro de los límites de la Ley 20.606.";
+  }
+
+  const excesos: string[] = [];
+
+  if (por100.azucares_g != null && por100.azucares_g > U.azucares_alto_g) {
+    const veces = +(por100.azucares_g / U.azucares_alto_g).toFixed(1);
+    excesos.push(
+      `azúcares (${por100.azucares_g}g por ${ref}, límite ${U.azucares_alto_g}g${veces >= 1.5 ? ` — ${veces}× el máximo` : ""})`
+    );
+  }
+  if (por100.sodio_mg != null && por100.sodio_mg > U.sodio_alto_mg) {
+    const veces = +(por100.sodio_mg / U.sodio_alto_mg).toFixed(1);
+    excesos.push(
+      `sodio (${por100.sodio_mg}mg por ${ref}, límite ${U.sodio_alto_mg}mg${veces >= 1.5 ? ` — ${veces}× el máximo` : ""})`
+    );
+  }
+  if (por100.grasas_saturadas_g != null && por100.grasas_saturadas_g > U.grasas_saturadas_alto_g) {
+    const veces = +(por100.grasas_saturadas_g / U.grasas_saturadas_alto_g).toFixed(1);
+    excesos.push(
+      `grasas saturadas (${por100.grasas_saturadas_g}g por ${ref}, límite ${U.grasas_saturadas_alto_g}g${veces >= 1.5 ? ` — ${veces}× el máximo` : ""})`
+    );
+  }
+  if (por100.calorias_kcal != null && por100.calorias_kcal > U.calorias_alto_kcal) {
+    const veces = +(por100.calorias_kcal / U.calorias_alto_kcal).toFixed(1);
+    excesos.push(
+      `calorías (${por100.calorias_kcal} kcal por ${ref}, límite ${U.calorias_alto_kcal} kcal${veces >= 1.5 ? ` — ${veces}× el máximo` : ""})`
+    );
+  }
+
+  const nSellos = sellos.length;
+  const intro =
+    nSellos === 1
+      ? "Tiene 1 sello de advertencia porque supera el límite legal en"
+      : `Tiene ${nSellos} sellos de advertencia porque supera el límite legal en`;
+
+  if (excesos.length === 0) return `${intro} uno o más nutrientes críticos según la Ley 20.606.`;
+  if (excesos.length === 1) return `${intro} ${excesos[0]}.`;
+  const last = excesos.pop()!;
+  return `${intro} ${excesos.join(", ")} y ${last}.`;
 }
 
 // ─── Helpers de texto ────────────────────────────────────────────────────────
