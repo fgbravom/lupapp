@@ -124,10 +124,10 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
       } else if (json.productos?.length > 1) {
         setEstado({ tipo: "seleccionando", resultados: json.productos });
       } else {
-        setEstado({ tipo: "error", mensaje: "No encontramos ese producto. ¿Lo tienes a mano? Puedes escanearlo." });
+        setEstado({ tipo: "error", mensaje: "Ese producto no está todavía. ¿Tienes el envase? Escanéalo y lo agregamos." });
       }
     } catch {
-      setEstado({ tipo: "error", mensaje: "Error al buscar. Intenta de nuevo." });
+      setEstado({ tipo: "error", mensaje: "Algo salió mal por acá. Intenta de nuevo." });
     }
   }, [texto]);
 
@@ -140,10 +140,10 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
       if (json.producto) {
         setEstado({ tipo: "resultado", producto: json.producto });
       } else {
-        setEstado({ tipo: "error", mensaje: `Código ${codigo} no está en nuestra base de datos aún.` });
+        setEstado({ tipo: "error", mensaje: `Código ${codigo} no está todavía. Sé el primero en agregarlo.` });
       }
     } catch {
-      setEstado({ tipo: "error", mensaje: "Error al buscar el código de barras." });
+      setEstado({ tipo: "error", mensaje: "Algo salió mal leyendo el código. Intenta de nuevo." });
     }
   }, []);
 
@@ -181,7 +181,7 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
                 if (e.key === "Enter") { setDropdownAbierto(false); buscarPorTexto(); }
                 if (e.key === "Escape") setDropdownAbierto(false);
               }}
-              placeholder="Buscar producto por nombre…"
+              placeholder="Escribe el nombre del producto…"
               disabled={estaOcupado}
               className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/30 focus:border-[var(--brand)]/50 disabled:opacity-50 transition-shadow text-base"
               autoComplete="off"
@@ -196,7 +196,7 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
                       ? "Buscando…"
                       : dropdownEsRecientes
                       ? "Productos en la base de datos"
-                      : `${dropdownProductos.length} resultado(s)`}
+                      : `${dropdownProductos.length} resultado${dropdownProductos.length !== 1 ? "s" : ""}`}
                   </span>
                   {cargandoDropdown && (
                     <div className="w-3 h-3 border border-[var(--border)] border-t-[var(--muted-foreground)] rounded-full animate-spin" />
@@ -206,7 +206,7 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
                 {!cargandoDropdown && dropdownProductos.length === 0 && (
                   <div className="px-4 py-5 text-center">
                     <p className="text-sm text-[var(--muted-foreground)]">
-                      {texto.trim().length >= 2 ? "Sin resultados" : "Aún no hay productos en la base de datos"}
+                      {texto.trim().length >= 2 ? "No encontramos nada. Prueba con otro nombre." : "Aún no hay productos. ¡Sé el primero en agregar uno!"}
                     </p>
                   </div>
                 )}
@@ -265,7 +265,7 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
       {estado.tipo === "seleccionando" && (
         <div className="space-y-1">
           <p className="text-sm font-medium text-[var(--muted-foreground)] px-1 pb-1">
-            Encontramos {estado.resultados.length} productos. ¿Cuál es?
+            Encontramos {estado.resultados.length}. ¿Cuál es el tuyo?
           </p>
           <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden divide-y divide-[var(--border)]">
             {estado.resultados.map((p) => (
@@ -303,7 +303,7 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
             className="mb-5 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors flex items-center gap-1.5"
           >
             <IconArrowLeft size={15} />
-            Buscar otro producto
+            Buscar otro
           </button>
           <ResultCard producto={estado.producto} />
         </div>

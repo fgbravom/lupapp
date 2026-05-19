@@ -8,13 +8,12 @@ import "./globals.css";
 import { DM_Sans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import BuyMeCoffeeWidget from "@/components/BuyMeCoffeeWidget";
-
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Lupapp — Ponemos los alimentos chilenos bajo la lupa",
   description:
-    "Analiza ingredientes y tabla nutricional de productos vendidos en Chile. Calificamos del 1.0 al 7.0 según la Ley 20.606.",
+    "¿Qué nota le pondrías a lo que comes? Lupapp califica productos chilenos del 1.0 al 7.0 según sus ingredientes reales. Gratis, sin registro.",
   keywords: ["alimentos Chile", "sellos nutricionales", "Ley 20.606", "etiquetado"],
   icons: {
     icon: "/favicon.png",
@@ -58,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="flex flex-col items-center sm:items-start gap-1">
                   <Logo size="sm" variant="full" />
                   <p className="text-xs text-[var(--muted-foreground)]">
-                    App informativa. No reemplaza consejo nutricional profesional.
+                    Referencia informativa. No reemplaza a un nutricionista.
                   </p>
                 </div>
 

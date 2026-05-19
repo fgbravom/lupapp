@@ -36,7 +36,7 @@ export default function BarcodeScanner({ onDetectado, onCerrar }: Props) {
         );
       } catch (err) {
         setError(
-          "No se pudo acceder a la cámara. Verifica los permisos del navegador."
+          "No pudimos acceder a la cámara. Revisa los permisos del navegador e intenta de nuevo."
         );
         console.error(err);
       }
@@ -59,7 +59,7 @@ export default function BarcodeScanner({ onDetectado, onCerrar }: Props) {
       <div className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-sm overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-700">
           <h2 className="font-bold text-neutral-900 dark:text-white">
-            Escanear código de barras
+            Escanear código
           </h2>
           <button
             onClick={onCerrar}
@@ -88,7 +88,7 @@ export default function BarcodeScanner({ onDetectado, onCerrar }: Props) {
             />
           )}
           <p className="text-xs text-center text-neutral-400 dark:text-neutral-500 mt-3">
-            Apunta la cámara al código de barras del producto
+            Apunta al código de barras del envase
           </p>
         </div>
       </div>

@@ -35,7 +35,7 @@ export default function AnalizarModal({ label = "Analizar producto", className =
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
           aria-modal="true"
           role="dialog"
-          aria-label="Analizar producto"
+          aria-label="Buscar producto"
         >
           {/* Fondo */}
           <div
@@ -51,10 +51,10 @@ export default function AnalizarModal({ label = "Analizar producto", className =
                 <Logo size="sm" variant="icon" />
                 <div>
                   <h2 className="font-black text-base text-[var(--foreground)]">
-                    Analizar producto
+                    ¿Qué vamos a analizar?
                   </h2>
                   <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
-                    Busca, escanea o fotografía la etiqueta
+                    Escribe el nombre, escanea el código o sube una foto.
                   </p>
                 </div>
               </div>

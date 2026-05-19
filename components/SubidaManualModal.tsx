@@ -80,10 +80,10 @@ export default function SubidaManualModal({ onResultado, onCerrar }: Props) {
         <div className="flex items-start justify-between p-5 border-b border-[var(--border)]">
           <div>
             <h2 className="text-base font-bold text-[var(--foreground)]">
-              Agregar producto con foto
+              Agregar con foto
             </h2>
             <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
-              Gemini Vision extrae los datos automáticamente.
+              Sube la foto y nosotros hacemos el resto.
             </p>
           </div>
           <button
@@ -97,7 +97,7 @@ export default function SubidaManualModal({ onResultado, onCerrar }: Props) {
 
         <div className="p-5 space-y-4">
           <p className="text-xs text-[var(--muted-foreground)]">
-            Sube hasta 3 fotos. Portada da nombre y miniatura; ingredientes y tabla nutricional mejoran la nota.
+            Una foto alcanza. Si subes ingredientes y tabla nutricional, la nota es más precisa.
           </p>
 
           <div className="grid grid-cols-3 gap-2">

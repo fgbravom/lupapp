@@ -219,7 +219,7 @@ export default function ResultCard({ producto }: { producto: Producto }) {
           Ver ficha completa
           <IconChevronRight size={13} />
         </Link>
-        <span className="italic hidden sm:block">App informativa. No reemplaza consejo nutricional.</span>
+        <span className="italic hidden sm:block">Referencia informativa. No reemplaza a un nutricionista.</span>
       </div>
     </div>
   );

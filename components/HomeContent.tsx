@@ -12,13 +12,13 @@ import { getGradeInfo } from "@/lib/gradeColor";
 // ─── Datos ────────────────────────────────────────────────────────────────────
 
 const ESCALA = [
-  { nota: 7, label: "Excelente",      desc: "Sin sellos ni aditivos problemáticos",     pct: 100, color: "#00B86B" },
-  { nota: 6, label: "Muy bueno",      desc: "Casi perfecto, mínimas observaciones",      pct: 82,  color: "#4CAF76" },
-  { nota: 5, label: "Bueno",          desc: "Uno o dos aspectos por mejorar",            pct: 64,  color: "#8BC34A" },
-  { nota: 4, label: "Suficiente",     desc: "Aprobado, pero con observaciones claras",   pct: 43,  color: "#FF9500" },
-  { nota: 3, label: "Deficiente",     desc: "Varios sellos o aditivos de riesgo",        pct: 29,  color: "#FF5722" },
-  { nota: 2, label: "Muy deficiente", desc: "Producto con serias alertas nutricionales", pct: 18,  color: "#F03333" },
-  { nota: 1, label: "Reprobado",      desc: "Múltiples alertas. No recomendado",         pct: 7,   color: "#E63030" },
+  { nota: 7, label: "Excelente",      desc: "El tipo de producto que tu nutricionista aprobaría.",         pct: 100, color: "#00B86B" },
+  { nota: 6, label: "Muy bueno",      desc: "Casi perfecto. Pocas razones para no comprarlo.",             pct: 82,  color: "#4CAF76" },
+  { nota: 5, label: "Bueno",          desc: "Pasa, pero hay mejores opciones en el mismo pasillo.",        pct: 64,  color: "#8BC34A" },
+  { nota: 4, label: "Suficiente",     desc: "El 4.0 de siempre. Pasa, pero no te emociones.",              pct: 43,  color: "#FF9500" },
+  { nota: 3, label: "Deficiente",     desc: "Cómpratelo si quieres, pero ya sabís lo que estás haciendo.", pct: 29,  color: "#FF5722" },
+  { nota: 2, label: "Muy deficiente", desc: "Serias alertas. Mejor busca una alternativa.",                pct: 18,  color: "#F03333" },
+  { nota: 1, label: "Reprobado",      desc: "Igual que en el colegio: esto no pasa.",                      pct: 7,   color: "#E63030" },
 ];
 
 const SELLOS = [
@@ -53,13 +53,12 @@ export default function HomeContent() {
       <section className="pt-6 pb-2 flex flex-col items-center text-center space-y-8">
         <div className="space-y-4 max-w-2xl">
           <h1 className="font-dm font-bold text-4xl sm:text-5xl text-[var(--foreground)] leading-[1.1] tracking-tight">
-            Descubre la nota real<br />
-            <span style={{ color: "var(--brand)" }}>de lo que comes.</span>
+            Ese producto que comes todos los días<br />
+            <span style={{ color: "var(--brand)" }}>tiene nota.</span>
           </h1>
           <p className="text-lg text-[var(--muted-foreground)]">
-            Calificamos alimentos del{" "}
-            <strong className="text-[var(--foreground)]">1.0 al 7.0</strong>{" "}
-            según la Ley&nbsp;20.606. Sin vueltas, sin eufemismos.
+            La misma escala del colegio,{" "}
+            <strong className="text-[var(--foreground)]">aplicada a la comida chilena.</strong>
           </p>
         </div>
 
@@ -124,7 +123,7 @@ export default function HomeContent() {
                 La escala que ya conoces
               </h2>
               <p className="text-sm text-[var(--muted-foreground)]">
-                La misma del colegio chileno, aplicada a lo que comes.
+                La usaste toda tu vida. Ahora úsala para saber qué estás comiendo.
               </p>
             </div>
 
@@ -155,24 +154,24 @@ export default function HomeContent() {
               <h2 className="font-bold text-2xl text-[var(--foreground)]">
                 ¿Cómo funciona?
               </h2>
-              <p className="text-sm text-[var(--muted-foreground)]">Tres pasos. Sin registro. Sin costo.</p>
+              <p className="text-sm text-[var(--muted-foreground)]">Sin registro. Sin costo. Sin vueltas.</p>
             </div>
 
             <div className="grid sm:grid-cols-3 gap-4">
               {[
                 {
-                  num: "01", titulo: "Fotografía la etiqueta",
-                  desc: "O escribe el nombre, o escanea el código de barras.",
+                  num: "01", titulo: "Escanea o busca el producto",
+                  desc: "Foto, nombre o código de barras. Lo que tengas a mano.",
                   icon: <IconCamera size={22} />,
                 },
                 {
-                  num: "02", titulo: "Analizamos con IA",
-                  desc: "Gemini Vision lee ingredientes y tabla nutricional.",
+                  num: "02", titulo: "Lo analizamos en segundos",
+                  desc: "Leemos ingredientes, sellos y tabla nutricional por ti.",
                   icon: <IconSparkles size={22} />,
                 },
                 {
-                  num: "03", titulo: "Recibe la nota",
-                  desc: "Del 1.0 al 7.0 según la Ley 20.606 y normas europeas.",
+                  num: "03", titulo: "Te damos la nota, sin filtro",
+                  desc: "Del 1.0 al 7.0. Igual que en el colegio, pero pa' la comida.",
                   icon: <GradeBadge nota={6.5} size="xs" />,
                 },
               ].map((paso) => (
@@ -261,9 +260,9 @@ export default function HomeContent() {
             </div>
             <div className="space-y-2">
               <h2 className="font-bold text-2xl text-[var(--foreground)]">
-                Empieza a saber lo que comes.
+                Ponle la lupa a tu próxima compra.
               </h2>
-              <p className="text-sm text-[var(--muted-foreground)]">Gratis, sin registro, sin publicidad.</p>
+              <p className="text-sm text-[var(--muted-foreground)]">Gratis. Sin registro. Sin publicidad. Solo la verdad.</p>
             </div>
           </section>
         </>
