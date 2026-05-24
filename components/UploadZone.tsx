@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState, type ReactNode } from "react";
+import { comprimirImagen } from "@/lib/comprimir-imagen";
 
 interface Props {
   label: string;
@@ -14,12 +15,23 @@ export default function UploadZone({ label, icono, archivo, onArchivo, deshabili
   const inputRef = useRef<HTMLInputElement>(null);
   const [arrastrando, setArrastrando] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [comprimiendo, setComprimiendo] = useState(false);
 
-  const manejarArchivo = useCallback((file: File) => {
+  const manejarArchivo = useCallback(async (file: File) => {
     if (!file.type.startsWith("image/")) return;
-    onArchivo(file);
-    const url = URL.createObjectURL(file);
-    setPreview(url);
+    setComprimiendo(true);
+    try {
+      const optimizado = await comprimirImagen(file);
+      onArchivo(optimizado);
+      const url = URL.createObjectURL(optimizado);
+      setPreview(url);
+    } catch {
+      onArchivo(file);
+      const url = URL.createObjectURL(file);
+      setPreview(url);
+    } finally {
+      setComprimiendo(false);
+    }
   }, [onArchivo]);
 
   const quitar = (e: React.MouseEvent) => {
@@ -42,7 +54,7 @@ export default function UploadZone({ label, icono, archivo, onArchivo, deshabili
       onDragOver={(e) => { e.preventDefault(); setArrastrando(true); }}
       onDragLeave={() => setArrastrando(false)}
       onDrop={onDrop}
-      onClick={() => !deshabilitado && !archivo && inputRef.current?.click()}
+      onClick={() => !deshabilitado && !comprimiendo && !archivo && inputRef.current?.click()}
       className={[
         "relative rounded-xl border-2 border-dashed transition-all",
         archivo ? "border-[var(--border)] cursor-default" : "cursor-pointer",
@@ -67,7 +79,12 @@ export default function UploadZone({ label, icono, archivo, onArchivo, deshabili
         }}
       />
 
-      {archivo && preview ? (
+      {comprimiendo ? (
+        <div className="flex flex-col items-center justify-center gap-2 p-4 h-28 text-center">
+          <div className="w-5 h-5 border-2 border-[var(--border)] border-t-[var(--brand)] rounded-full animate-spin" />
+          <p className="text-xs text-[var(--muted-foreground)]">Optimizando…</p>
+        </div>
+      ) : archivo && preview ? (
         <div className="relative">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={preview} alt={label} className="w-full h-28 object-cover rounded-xl" />
