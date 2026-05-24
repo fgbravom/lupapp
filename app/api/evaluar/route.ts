@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     const resultado = evaluar(ocr.tabla_nutricional, ocr.ingredientes ?? []);
-    const producto = await crearProducto(ocr, resultado, imagen_url);
+    const producto = await crearProducto(ocr, resultado, imagen_url, "foto");
 
     return NextResponse.json({ producto, existia: false });
   } catch (error) {

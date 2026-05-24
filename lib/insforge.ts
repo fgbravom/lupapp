@@ -83,7 +83,8 @@ export async function incrementarEscaneos(id: string): Promise<void> {
 export async function crearProducto(
   ocr: DatosOCR,
   resultado: ResultadoEvaluacion,
-  imagen_url: string | null = null
+  imagen_url: string | null = null,
+  fuente_datos: string | null = null
 ): Promise<Producto> {
   const db = crearClienteAdmin();
   const { data, error } = await db.database
@@ -103,6 +104,7 @@ export async function crearProducto(
         comparativa_eu: resultado.comparativa_eu,
         veces_escaneado: 1,
         imagen_url,
+        fuente_datos,
       },
     ])
     .select();

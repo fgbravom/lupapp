@@ -16,7 +16,7 @@ type Estado =
   | { tipo: "buscando" }
   | { tipo: "seleccionando"; resultados: Producto[] }
   | { tipo: "resultado"; producto: Producto }
-  | { tipo: "error"; mensaje: string };
+  | { tipo: "error"; mensaje: string; codigoPendiente?: string };
 
 interface BuscadorProps {
   onResultadoChange?: (tieneResultado: boolean) => void;
@@ -138,9 +138,21 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
       const res = await fetch(`/api/barcode?codigo=${encodeURIComponent(codigo)}`);
       const json = await res.json();
       if (json.producto) {
+        guardarReciente({
+          id: json.producto.id,
+          nombre: json.producto.nombre,
+          marca: json.producto.marca,
+          nota_cl: json.producto.nota_cl,
+          imagen_url: json.producto.imagen_url,
+          sellos_cl: json.producto.sellos_cl,
+        });
         setEstado({ tipo: "resultado", producto: json.producto });
       } else {
-        setEstado({ tipo: "error", mensaje: `Código ${codigo} no está todavía. Sé el primero en agregarlo.` });
+        setEstado({
+          tipo: "error",
+          mensaje: `Código ${codigo} no está todavía. Sé el primero en agregarlo.`,
+          codigoPendiente: codigo,
+        });
       }
     } catch {
       setEstado({ tipo: "error", mensaje: "Algo salió mal leyendo el código. Intenta de nuevo." });
@@ -315,6 +327,7 @@ export default function BuscadorProducto({ onResultadoChange }: BuscadorProps = 
 
       {mostrarSubidaManual && (
         <SubidaManualModal
+          codigoBarras={estado.tipo === "error" ? estado.codigoPendiente : undefined}
           onResultado={(producto) => {
             setMostrarSubidaManual(false);
             setEstado({ tipo: "resultado", producto });

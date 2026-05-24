@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { buscarProductoPorBarcode, crearClienteAdmin } from "@/lib/insforge";
+import {
+  buscarProductoPorBarcode,
+  incrementarEscaneos,
+  crearProducto,
+} from "@/lib/insforge";
+import { buscarEnOFF } from "@/lib/openfoodfacts";
+import { evaluar } from "@/lib/evaluator";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -10,15 +16,27 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const producto = await buscarProductoPorBarcode(codigo);
+    // 1. Hit local
+    const local = await buscarProductoPorBarcode(codigo);
+    if (local) {
+      await incrementarEscaneos(local.id);
+      return NextResponse.json({ producto: local });
+    }
 
-    if (!producto) {
+    // 2. Fallback OpenFoodFacts
+    const off = await buscarEnOFF(codigo);
+    if (!off) {
       return NextResponse.json({ producto: null });
     }
 
-    // Incrementar contador de escaneos
-    const db = crearClienteAdmin();
-    await db.database.rpc("incrementar_escaneos", { producto_id: producto.id });
+    off.datos.codigo_barras = codigo;
+    const resultado = evaluar(off.datos.tabla_nutricional, off.datos.ingredientes);
+    const producto = await crearProducto(
+      off.datos,
+      resultado,
+      off.imagen_url,
+      "openfoodfacts"
+    );
 
     return NextResponse.json({ producto });
   } catch {

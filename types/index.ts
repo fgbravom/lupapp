@@ -40,6 +40,7 @@ export interface Producto {
   comparativa_eu: ComparativaEU;
   veces_escaneado: number;
   imagen_url: string | null;
+  fuente_datos: string | null;
   creado_en: string;
   actualizado_en: string;
 }

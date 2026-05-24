@@ -221,6 +221,21 @@ export default function ResultCard({ producto }: { producto: Producto }) {
         </Link>
         <span className="italic hidden sm:block">Referencia informativa. No reemplaza a un nutricionista.</span>
       </div>
+
+      {producto.fuente_datos === "openfoodfacts" && (
+        <p className="text-[10px] text-[var(--muted-foreground)] text-center pt-1">
+          Datos nutricionales de{" "}
+          <a
+            href={`https://world.openfoodfacts.org/product/${producto.codigo_barras}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-[var(--foreground)] transition-colors"
+          >
+            OpenFoodFacts
+          </a>
+          {" · Licencia ODbL"}
+        </p>
+      )}
     </div>
   );
 }

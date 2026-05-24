@@ -8,11 +8,25 @@ import type { Producto } from "@/types";
 interface Props {
   onResultado: (producto: Producto) => void;
   onCerrar: () => void;
+  codigoBarras?: string;
 }
 
 type Fase = { tipo: "idle" } | { tipo: "procesando" } | { tipo: "error"; mensaje: string };
 
-export default function SubidaManualModal({ onResultado, onCerrar }: Props) {
+async function mensajeError(res: Response, fallback: string): Promise<string> {
+  if (res.status === 413) {
+    return "Las imágenes son muy grandes. Intenta con menos fotos o vuelve a tomarlas.";
+  }
+  try {
+    const data = await res.json();
+    if (data && typeof data.error === "string") return data.error;
+  } catch {
+    // body no era JSON (p.ej. error 413 de Vercel devuelve texto plano)
+  }
+  return fallback;
+}
+
+export default function SubidaManualModal({ onResultado, onCerrar, codigoBarras }: Props) {
   const [imgPortada, setImgPortada] = useState<File | null>(null);
   const [imgIngredientes, setImgIngredientes] = useState<File | null>(null);
   const [imgNutricional, setImgNutricional] = useState<File | null>(null);
@@ -44,10 +58,13 @@ export default function SubidaManualModal({ onResultado, onCerrar }: Props) {
 
       const ocrRes = await fetch("/api/ocr", { method: "POST", body: formData });
       if (!ocrRes.ok) {
-        const err = await ocrRes.json();
-        throw new Error(err.error ?? "Error al procesar imágenes");
+        throw new Error(await mensajeError(ocrRes, "Error al procesar imágenes"));
       }
       const { datos, imagen_url } = await ocrRes.json();
+
+      if (codigoBarras) {
+        datos.codigo_barras = codigoBarras;
+      }
 
       const evalRes = await fetch("/api/evaluar", {
         method: "POST",
@@ -55,8 +72,7 @@ export default function SubidaManualModal({ onResultado, onCerrar }: Props) {
         body: JSON.stringify({ datos, imagen_url }),
       });
       if (!evalRes.ok) {
-        const err = await evalRes.json();
-        throw new Error(err.error ?? "Error al evaluar");
+        throw new Error(await mensajeError(evalRes, "Error al evaluar"));
       }
       const { producto } = await evalRes.json();
       onResultado(producto);
@@ -66,7 +82,7 @@ export default function SubidaManualModal({ onResultado, onCerrar }: Props) {
         mensaje: err instanceof Error ? err.message : "Error al procesar las imágenes.",
       });
     }
-  }, [imgPortada, imgIngredientes, imgNutricional, tieneImagenes, onResultado]);
+  }, [imgPortada, imgIngredientes, imgNutricional, tieneImagenes, onResultado, codigoBarras]);
 
   return (
     <div
